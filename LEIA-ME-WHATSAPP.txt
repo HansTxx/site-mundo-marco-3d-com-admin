@@ -1,0 +1,17 @@
+CORREÇÃO DO BOTÃO FINALIZAR PEDIDO
+
+No arquivo .env, preencha WHATSAPP_NUMBER com o número que receberá
+os pedidos, incluindo código do país e DDD, somente dígitos.
+
+Depois, inicie ou reinicie o servidor com npm start e abra
+http://localhost:3000 (ou a porta configurada no seu .env).
+Atualize a página com Ctrl+F5 para carregar o código corrigido.
+
+Adicione produtos, calcule e selecione o frete, preencha os dados
+do cliente e clique em Finalizar pedido. O WhatsApp será aberto
+com os dados do cliente, endereço, produtos, frete e total.
+O cliente ainda precisa tocar em Enviar no WhatsApp.
+
+A correção carrega o contato público do .env, trata configuração
+ausente e abre na mesma aba quando a nova aba é bloqueada.
+As rotas e configurações existentes da SuperFrete foram preservadas.

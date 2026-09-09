@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pedidos | Mundo do Marco 3D</title>
+  <link rel="icon" href="/imagens/favicon.png"><link rel="stylesheet" href="/admin/style.css">
+  <script defer src="/admin/app.js"></script>
+</head>
+<body>
+  <header><div><span class="marca">Mundo do Marco 3D</span><span class="tag">Área administrativa</span></div><a href="/">Ver loja ↗</a></header>
+  <main>
+    <section id="login" class="login" hidden>
+      <span class="eyebrow">ACESSO RESTRITO</span><h1>Bem-vindo de volta.</h1>
+      <p>Entre para acompanhar os pedidos da loja.</p>
+      <form id="login-form">
+        <label for="usuario">Usuário</label><input id="usuario" name="username" autocomplete="username" required maxlength="200">
+        <label for="senha">Senha</label><input id="senha" name="password" type="password" autocomplete="current-password" required maxlength="500">
+        <button type="submit">Entrar</button>
+      </form>
+    </section>
+    <p id="status" role="status" aria-live="polite">Verificando acesso…</p>
+    <section id="painel" hidden>
+      <div class="heading"><div><span class="eyebrow">SUA LOJA EM ORDEM</span><h1>Pedidos recebidos</h1><p>Do mais antigo para o mais recente.</p></div><div class="actions"><button id="atualizar">Atualizar</button><button id="sair" class="secondary">Sair</button></div></div>
+      <div class="summary"><strong id="contagem">0 pedidos</strong><span>Registrados no site · envio pelo WhatsApp e pagamento a confirmar</span></div>
+      <div class="order-tabs" role="tablist" aria-label="Situação dos pedidos">
+        <button id="tab-aberto" role="tab" aria-selected="true" aria-controls="pedidos" data-status="aberto">Em andamento (0)</button>
+        <button id="tab-producao" role="tab" aria-selected="false" aria-controls="pedidos" tabindex="-1" data-status="producao">Em produção (0)</button>
+        <button id="tab-finalizado" role="tab" aria-selected="false" aria-controls="pedidos" tabindex="-1" data-status="finalizado">Finalizados (0)</button>
+        <button id="tab-reaberto" role="tab" aria-selected="false" aria-controls="pedidos" tabindex="-1" data-status="reaberto">Reabertos (0)</button>
+      </div>
+      <div id="pedidos" role="tabpanel" aria-labelledby="tab-aberto" tabindex="0"></div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
+    "preco": 99.9,
+    "imagem": "imagens/produto1.jpeg",
+    "peso": 0.5,
+    "largura": 15,
+    "altura": 10,
+    "comprimento": 20,
+    "descricao": "Caixa com capacidade para 50 munições."
+  },
+  {
+    "id": 2,
+    "nome": "Caixa para munição 357, 38 e 22LR.",
+    "preco": 119.9,
+    "imagem": "imagens/produto2.jpeg",
+    "peso": 0.7,
+    "largura": 18,
+    "altura": 12,
+    "comprimento": 24,
+    "descricao": "Caixa com capacidade para 50 munições."
+  }
+]

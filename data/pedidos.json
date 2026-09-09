@@ -1,0 +1,49 @@
+[
+  {
+    "cliente": {
+      "nome": "Matheus Fenili Wiggers",
+      "email": "matheuswiggers2@gmail.com",
+      "telefone": "(48) 99993-1943",
+      "logradouro": "AVENIDA PREFEITO CIRINO ADOLFO CABRAL",
+      "cidade": "Navegantes",
+      "estado": "SC",
+      "numero": "935",
+      "complemento": "Apto 501",
+      "cep": "88370060"
+    },
+    "itens": [
+      {
+        "id": 2,
+        "nome": "Caixa para munição 357, 38 e 22LR.",
+        "quantidade": 1,
+        "preco": 119.9,
+        "subtotal": 119.9
+      }
+    ],
+    "subtotal": 119.9,
+    "frete": {
+      "id": "2",
+      "nome": "SEDEX",
+      "prazo": "1 dias úteis",
+      "valor": 15.7
+    },
+    "total": 135.6,
+    "numero": 1,
+    "dataHora": "2026-09-08T16:55:59.726Z",
+    "chave": "5c58099e649acb08bd200691161455d08b99089e8ec390bd",
+    "fingerprint": "fa70d5f01d0b8d694d88f50ae87528a4014b4754ef780aff719532949b2120d0",
+    "status": "finalizado",
+    "finalizadoEm": "2026-09-08T20:25:40.811Z",
+    "revisao": 5,
+    "atualizadoEm": "2026-09-08T20:25:40.811Z",
+    "producaoEm": "2026-09-08T20:25:32.060Z"
+  },
+  {
+    "numero": 2,
+    "chave": "460c83a7e55bbe690ff23bbcd3fee80a9cf74dd61ad43be4",
+    "fingerprint": "ca80234045639732db9ce84506799389b220dcc9d276df116cccf0a1a5199d21",
+    "excluidoEm": "2026-09-08T19:34:16.903Z",
+    "revisao": 4,
+    "atualizadoEm": "2026-09-08T19:34:16.903Z"
+  }
+]
