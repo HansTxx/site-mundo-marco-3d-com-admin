@@ -102,3 +102,13 @@ O botão Em produção aparece nos pedidos em andamento e reabertos. Ao clicar, 
 Pedidos e configurações do ZIP recebido foram preservados. Ao atualizar, pare o servidor, preserve seu .env e a pasta data mais recentes, substitua o código e reinicie. Recarregue o painel para carregar a nova aba. Não substitua pedidos recentes pela cópia de dados do pacote.
 
 A transição foi conferida no navegador com dados isolados. npm test passou incluindo persistência do status, edição durante produção, finalização e bloqueio de operação sem login.
+
+
+## Versão 17.0 — observações em negrito
+O conteúdo das observações internas agora aparece em negrito no cartão do pedido e no campo de edição, em todas as abas administrativas. As observações já salvas recebem o mesmo destaque automaticamente. A alteração é apenas visual.
+
+
+
+## Fechar o carrinho clicando fora
+Com o carrinho aberto, clicar ou tocar na área escurecida fora dele fecha o carrinho e volta à loja. Clicar nos campos e botões dentro do carrinho continua funcionando normalmente. Os itens e dados preenchidos são mantidos; o botão X também continua disponível.
+

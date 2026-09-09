@@ -55,7 +55,7 @@ function renderOrder(order) {
   head.append(element('h2', `Pedido #${String(order.numero).padStart(4, '0')}`), time);
   const details = element('div', null, 'details');
   const customer = element('section'); const address = element('section'); const c = order.cliente;
-  customer.append(element('h3', 'Cliente'), element('p', c.nome), element('p', c.email), element('p', c.telefone));
+  customer.append(element('h3', 'Cliente'), element('p', c.nome), element('p', c.email), element('p', c.telefone), element('p', `CPF: ${formatarCPF(c.cpf) || 'Não informado'}`));
   address.append(element('h3', 'Entrega'), element('p', `${c.logradouro}, ${c.numero}`),
     element('p', c.complemento || 'Sem complemento'), element('p', `${c.cidade} / ${c.estado} · CEP ${c.cep}`),
     element('p', `${order.frete.nome} · ${order.frete.prazo || 'Prazo não informado'}`));
@@ -163,9 +163,15 @@ function openEditor(order, focusNotes = false) {
   }
   const customer = element('div', null, 'edit-grid');
   const inputs = {};
-  for (const [key, label] of Object.entries({ nome: 'Nome', email: 'E-mail', telefone: 'Telefone', logradouro: 'Logradouro', numero: 'Número', complemento: 'Complemento', cidade: 'Cidade', estado: 'Estado (UF)', cep: 'CEP' })) {
-    inputs[key] = field(customer, label, order.cliente[key], { required: key !== 'complemento', type: key === 'email' ? 'email' : 'text', max: key === 'logradouro' ? 300 : 200 });
+  for (const [key, label] of Object.entries({ nome: 'Nome', email: 'E-mail', telefone: 'Telefone', cpf: 'CPF', logradouro: 'Logradouro', numero: 'Número', complemento: 'Complemento', cidade: 'Cidade', estado: 'Estado (UF)', cep: 'CEP' })) {
+    inputs[key] = field(customer, label, order.cliente[key], { required: key !== 'complemento' && key !== 'cpf', type: key === 'email' ? 'email' : 'text', max: key === 'logradouro' ? 300 : 200 });
   }
+  inputs.cpf.removeAttribute('maxlength');
+  inputs.cpf.inputMode = 'numeric';
+  inputs.cpf.placeholder = '000.000.000-00';
+  inputs.cpf.value = formatarCPF(inputs.cpf.value);
+  inputs.cpf.addEventListener('input', e => aplicarMascaraCPF(e.target));
+  inputs.cpf.addEventListener('change', e => aplicarMascaraCPF(e.target));
   form.append(element('h3', 'Cliente e endereço'), customer);
   const list = element('div', null, 'edit-items'); const rows = [];
   const summary = element('p', '', 'edit-summary');
@@ -196,6 +202,7 @@ function openEditor(order, focusNotes = false) {
   shippingPrice.addEventListener('input', updateTotals);
   form.append(element('h3', 'Frete e valores'), shipping, summary);
   const observation = field(form, 'Observações internas', order.observacoes || '', { multiline: true, max: 5000, required: false });
+  observation.classList.add('observacoes-input');
   const feedback = element('p', '', 'edit-error'); feedback.setAttribute('role', 'status');
   const actions = element('div', null, 'edit-actions');
   const save = element('button', 'Salvar alterações'); save.type = 'submit';

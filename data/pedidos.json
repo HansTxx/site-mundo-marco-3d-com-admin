@@ -34,9 +34,10 @@
     "fingerprint": "fa70d5f01d0b8d694d88f50ae87528a4014b4754ef780aff719532949b2120d0",
     "status": "finalizado",
     "finalizadoEm": "2026-09-08T20:25:40.811Z",
-    "revisao": 5,
-    "atualizadoEm": "2026-09-08T20:25:40.811Z",
-    "producaoEm": "2026-09-08T20:25:32.060Z"
+    "revisao": 6,
+    "atualizadoEm": "2026-09-09T17:56:47.712Z",
+    "producaoEm": "2026-09-08T20:25:32.060Z",
+    "observacoes": "dsadsads"
   },
   {
     "numero": 2,
@@ -45,5 +46,43 @@
     "excluidoEm": "2026-09-08T19:34:16.903Z",
     "revisao": 4,
     "atualizadoEm": "2026-09-08T19:34:16.903Z"
+  },
+  {
+    "cliente": {
+      "nome": "Matheus Fenili",
+      "email": "matheuswiggers2@gmail.com",
+      "telefone": "(48) 99993-1943",
+      "logradouro": "AVENIDA PREFEITO CIRINO ADOLFO CABRAL",
+      "cidade": "Navegantes",
+      "estado": "SC",
+      "numero": "935",
+      "complemento": "Apto 501",
+      "cep": "88370060",
+      "cpf": "116.803.079-08"
+    },
+    "itens": [
+      {
+        "id": 1,
+        "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
+        "quantidade": 1,
+        "preco": 99.9,
+        "subtotal": 99.9
+      }
+    ],
+    "subtotal": 99.9,
+    "frete": {
+      "id": "2",
+      "nome": "SEDEX",
+      "prazo": "1 dias úteis",
+      "valor": 14.48
+    },
+    "total": 114.38,
+    "numero": 3,
+    "dataHora": "2026-09-09T18:52:52.391Z",
+    "chave": "d4d49b94337dc2e49ae3baa975c3cc3a16ee28b24e6cbe32",
+    "fingerprint": "033f5b9824d80a149a174d15550d3fb50411ff2bb452064169ac51a96135b3c9",
+    "revisao": 1,
+    "status": "aberto",
+    "observacoes": ""
   }
 ]

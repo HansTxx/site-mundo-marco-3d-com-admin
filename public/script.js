@@ -15,6 +15,7 @@ function salvarEstado() {
       nome: $("#nome")?.value || "",
       email: $("#email")?.value || "",
       telefone: $("#telefone")?.value || "",
+      cpf: formatarCPF($("#cpf")?.value || ""),
       logradouro: $("#logradouro")?.value || "",
       cidade: $("#cidade")?.value || "",
       estado: $("#estado")?.value || "",
@@ -48,13 +49,13 @@ function carregarEstado() {
 
     const cliente = dados.cliente || {};
     const campos = [
-      "nome", "email", "telefone", "logradouro",
+      "nome", "email", "telefone", "cpf", "logradouro",
       "cidade", "estado", "numero", "complemento", "cep"
     ];
 
     campos.forEach(id => {
       const campo = document.getElementById(id);
-      if (campo && cliente[id]) campo.value = cliente[id];
+      if (campo && cliente[id]) campo.value = id === "cpf" ? formatarCPF(cliente[id]) : cliente[id];
     });
   } catch (erro) {
     console.warn("Não foi possível recuperar os dados salvos.", erro);
@@ -80,7 +81,7 @@ function produtoPorId(id) {
 function renderProdutos() {
   $("#listaProdutos").innerHTML = produtos.map(p => `
     <article class="produto">
-      <div class="imagem-produto"><img src="${p.imagem}" alt="${p.nome}"></div>
+      <div class="imagem-produto" data-produto="${p.id}"><img src="${p.imagem}" alt="${p.nome}"></div>
       <div class="info-produto">
         <h3>${p.nome}</h3>
         <p class="descricao">${p.descricao}</p>
@@ -89,6 +90,57 @@ function renderProdutos() {
       </div>
     </article>
   `).join("");
+  document.querySelectorAll('.imagem-produto[data-produto]').forEach(container => {
+    const produto = produtoPorId(Number(container.dataset.produto));
+    const fotos = [...new Set([produto.imagem, ...(produto.imagens || [])].filter(Boolean))];
+    if (fotos.length < 2) return;
+    container.classList.add('carrossel-produto');
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', `Fotos de ${produto.nome}`);
+    const imagem = container.querySelector('img');
+    let transicao = null;
+    let indice = 0;
+    const contador = document.createElement('span');
+    contador.className = 'carrossel-contador';
+    contador.setAttribute('aria-live', 'polite');
+    contador.setAttribute('aria-atomic', 'true');
+    function mostrarFoto(delta) {
+      if (transicao) transicao.cancel();
+      imagem.onload = null;
+      indice = (indice + delta + fotos.length) % fotos.length;
+      if (delta && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        imagem.onload = () => {
+          imagem.onload = null;
+          transicao = imagem.animate(
+            [{ opacity: 0.2 }, { opacity: 1 }],
+            { duration: 350, easing: 'ease-out' }
+          );
+        };
+      }
+      imagem.src = fotos[indice];
+      if (imagem.complete && imagem.naturalWidth && imagem.onload) imagem.onload();
+      imagem.alt = `${produto.nome} — foto ${indice + 1} de ${fotos.length}`;
+      contador.textContent = `${indice + 1} / ${fotos.length}`;
+    }
+    for (const [delta, direcao, simbolo, rotulo] of [
+      [-1, 'anterior', '‹', 'Foto anterior'], [1, 'proxima', '›', 'Próxima foto']
+    ]) {
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = `carrossel-seta carrossel-${direcao}`;
+      botao.textContent = simbolo;
+      botao.setAttribute('aria-label', rotulo);
+      botao.addEventListener('click', () => mostrarFoto(delta));
+      container.append(botao);
+    }
+    container.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      mostrarFoto(event.key === 'ArrowLeft' ? -1 : 1);
+    });
+    container.append(contador);
+    mostrarFoto(0);
+  });
 }
 
 function adicionar(id) {
@@ -305,7 +357,7 @@ async function finalizarPedido() {
   }
 
   const cliente = {};
-  for (const id of ['nome', 'email', 'telefone', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep']) {
+  for (const id of ['nome', 'email', 'telefone', 'cpf', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep']) {
     cliente[id] = document.getElementById(id).value.trim();
   }
   const payload = { cliente, itens: carrinho.map(i => ({ id: i.id, quantidade: i.quantidade })), frete: freteSelecionado };
@@ -351,6 +403,9 @@ function mostrarToast(texto) {
 
 $("#abrirCarrinho").addEventListener("click", abrirCarrinho);
 $("#fecharCarrinho").addEventListener("click", fecharCarrinho);
+$("#fundoModal").addEventListener("click", (event) => {
+  if (event.target === event.currentTarget) fecharCarrinho();
+});
 $("#calcularFrete").addEventListener("click", calcularFrete);
 $("#finalizarPedido").addEventListener("click", finalizarPedido);
 
@@ -360,6 +415,9 @@ $("#cep").addEventListener("input", (e) => {
   e.target.value = valor;
   freteSelecionado = null; opcoesFrete = []; renderCarrinho();
 });
+
+$("#cpf").addEventListener("input", e => aplicarMascaraCPF(e.target));
+$("#cpf").addEventListener("change", e => aplicarMascaraCPF(e.target));
 
 $("#telefone").addEventListener("input", (e) => {
   let valor = e.target.value.replace(/\D/g, "").slice(0, 11);
@@ -373,7 +431,7 @@ $("#telefone").addEventListener("input", (e) => {
 });
 
 [
-  "nome", "email", "telefone", "logradouro",
+  "nome", "email", "telefone", "cpf", "logradouro",
   "cidade", "estado", "numero", "complemento", "cep"
 ].forEach(id => {
   const campo = document.getElementById(id);

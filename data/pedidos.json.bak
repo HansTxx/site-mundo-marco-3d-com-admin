@@ -32,11 +32,12 @@
     "dataHora": "2026-09-08T16:55:59.726Z",
     "chave": "5c58099e649acb08bd200691161455d08b99089e8ec390bd",
     "fingerprint": "fa70d5f01d0b8d694d88f50ae87528a4014b4754ef780aff719532949b2120d0",
-    "status": "producao",
-    "finalizadoEm": null,
-    "revisao": 4,
-    "atualizadoEm": "2026-09-08T20:25:32.060Z",
-    "producaoEm": "2026-09-08T20:25:32.060Z"
+    "status": "finalizado",
+    "finalizadoEm": "2026-09-08T20:25:40.811Z",
+    "revisao": 6,
+    "atualizadoEm": "2026-09-09T17:56:47.712Z",
+    "producaoEm": "2026-09-08T20:25:32.060Z",
+    "observacoes": "dsadsads"
   },
   {
     "numero": 2,
