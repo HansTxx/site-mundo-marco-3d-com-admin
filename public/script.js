@@ -381,7 +381,7 @@ async function finalizarPedido() {
     const dados = await resposta.json();
     if (!resposta.ok) throw new Error(dados.erro || 'Não foi possível salvar o pedido. Tente novamente.');
     const url = 'https://wa.me/' + config.whatsappNumber + '?text=' + encodeURIComponent(dados.mensagem);
-    $('#pedidoSalvoTexto').textContent = 'Pedido #' + dados.numero + ' registrado. Envie a mensagem no WhatsApp para conversar com a loja.';
+    $('#pedidoSalvoTexto').textContent = 'Pedido #' + String(dados.numero).padStart(5, '0') + ' registrado. Envie a mensagem no WhatsApp para conversar com a loja.';
     $('#abrirWhatsappPedido').href = url; aviso.hidden = false;
     try { salvarEstado(); } catch {}
     if (aba && !aba.closed) aba.location.replace(url);

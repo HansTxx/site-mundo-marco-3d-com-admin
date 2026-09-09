@@ -52,7 +52,7 @@ function renderOrder(order) {
   const head = element('header');
   const time = element('time', new Date(order.dataHora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + ' · Brasília');
   time.dateTime = order.dataHora;
-  head.append(element('h2', `Pedido #${String(order.numero).padStart(4, '0')}`), time);
+  head.append(element('h2', `Pedido #${String(order.numero).padStart(5, '0')}`), time);
   const details = element('div', null, 'details');
   const customer = element('section'); const address = element('section'); const c = order.cliente;
   customer.append(element('h3', 'Cliente'), element('p', c.nome), element('p', c.email), element('p', c.telefone), element('p', `CPF: ${formatarCPF(c.cpf) || 'Não informado'}`));
@@ -82,7 +82,7 @@ function renderOrder(order) {
   finish.addEventListener('click', () => changeOrder(order, order.status === 'finalizado' ? 'reabrir' : 'finalizar', finish));
   const remove = element('button', 'Deletar pedido', 'danger');
   remove.addEventListener('click', () => {
-    if (confirm(`Deletar o pedido #${order.numero}? Ele será removido da lista e não poderá ser recuperado pelo painel.`)) changeOrder(order, 'excluir', remove);
+    if (confirm(`Deletar o pedido #${String(order.numero).padStart(5, '0')}? Ele será removido da lista e não poderá ser recuperado pelo painel.`)) changeOrder(order, 'excluir', remove);
   });
   actions.append(edit, note);
   if (['aberto', 'reaberto'].includes(orderStatus(order))) {
@@ -147,7 +147,7 @@ function openEditor(order, focusNotes = false) {
   if (mutationBusy) return;
   editor.replaceChildren();
   const form = element('form');
-  const title = element('h2', `Alterar pedido #${order.numero}`); title.id = 'edit-title';
+  const title = element('h2', `Alterar pedido #${String(order.numero).padStart(5, '0')}`); title.id = 'edit-title';
   form.append(title, element('p', 'Altere os dados necessários. O número e a data de entrada são mantidos.'));
   let fieldCounter = 0;
   function field(parent, label, value, options = {}) {
@@ -219,7 +219,7 @@ function openEditor(order, focusNotes = false) {
       itens: rows.map(row => ({ id: row.id, nome: row.name.value, quantidade: Number(row.qty.value), preco: Number(row.price.value) })),
       frete: { id: shippingId.value, nome: shippingName.value, prazo: shippingTerm.value, valor: Number(shippingPrice.value) }, observacoes: observation.value };
     savingEdit = true; save.disabled = true; cancel.disabled = true; feedback.textContent = 'Salvando…';
-    try { await api(`/api/admin/pedidos/${order.numero}/alterar`, body); editor.close(); await load(); status('Alterações do pedido #' + order.numero + ' salvas.'); }
+    try { await api(`/api/admin/pedidos/${order.numero}/alterar`, body); editor.close(); await load(); status('Alterações do pedido #' + String(order.numero).padStart(5, '0') + ' salvas.'); }
     catch (error) { feedback.textContent = error.message; }
     finally { savingEdit = false; save.disabled = false; cancel.disabled = false; }
   });
