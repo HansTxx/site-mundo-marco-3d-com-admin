@@ -5,12 +5,17 @@ let opcoesFrete = [];
 const STORAGE_KEY = "minha-loja-dados";
 
 const $ = (seletor) => document.querySelector(seletor);
+const camposPersonalizacao = ['corSuporte', 'corTampa', 'corTrava'];
+function lerPersonalizacao() {
+  return Object.fromEntries(camposPersonalizacao.map(id => [id, document.getElementById(id).value.trim()]));
+}
 
 function salvarEstado() {
   const dados = {
     carrinho,
     freteSelecionado,
     opcoesFrete,
+    personalizacao: lerPersonalizacao(),
     cliente: {
       nome: $("#nome")?.value || "",
       email: $("#email")?.value || "",
@@ -34,6 +39,10 @@ function carregarEstado() {
     if (!salvo) return;
 
     const dados = JSON.parse(salvo);
+    camposPersonalizacao.forEach(id => {
+      const value = dados.personalizacao?.[id];
+      if (typeof value === 'string') document.getElementById(id).value = value.slice(0, 1000);
+    });
 
     if (Array.isArray(dados.carrinho)) {
       carrinho = dados.carrinho;
@@ -360,7 +369,7 @@ async function finalizarPedido() {
   for (const id of ['nome', 'email', 'telefone', 'cpf', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep']) {
     cliente[id] = document.getElementById(id).value.trim();
   }
-  const payload = { cliente, itens: carrinho.map(i => ({ id: i.id, quantidade: i.quantidade })), frete: freteSelecionado };
+  const payload = { cliente, itens: carrinho.map(i => ({ id: i.id, quantidade: i.quantidade })), frete: freteSelecionado, personalizacao: lerPersonalizacao() };
   const snapshot = JSON.stringify(payload);
   if (!tentativaPedido || tentativaPedido.snapshot !== snapshot) {
     const random = new Uint8Array(24); crypto.getRandomValues(random);
@@ -441,6 +450,7 @@ $("#telefone").addEventListener("input", (e) => {
   }
 });
 
+camposPersonalizacao.forEach(id => document.getElementById(id).addEventListener('input', salvarEstado));
 carregarEstado();
 renderProdutos();
 renderCarrinho();
@@ -454,6 +464,7 @@ $('#novoPedido').addEventListener('click', () => {
   tentativaPedido = null;
   try { sessionStorage.removeItem('marco-tentativa'); } catch {}
   carrinho = []; freteSelecionado = null; opcoesFrete = [];
+  camposPersonalizacao.forEach(id => { document.getElementById(id).value = ''; });
   renderCarrinho(); salvarEstado(); $('#pedidoSalvo').hidden = true;
   mostrarToast('Carrinho pronto para um novo pedido.');
 });

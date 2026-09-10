@@ -51,6 +51,9 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
     logradouro: 'Rua de teste', numero: '920', complemento: 'Casa 1', cidade: 'Navegantes', estado: 'SC', cep: '88370-603' },
     itens: [{ id: 1, quantidade: 2 }], frete: { id: 'demo', nome: 'Entrega teste', prazo: '5 dias úteis', valor: 18.9 }, subtotal: 0, total: 0 };
   const headers = { 'Idempotency-Key': 'test-unique-order-0001' };
+  payload.personalizacao = { corSuporte: 'Preto', corTampa: 'Azul com nome Marco\n<script>texto</script>', corTrava: 'Amarelo' };
+  assert.equal((await request('/api/pedidos', { ...payload, personalizacao: { corSuporte: 'a'.repeat(1001) } }, headers)).status, 400);
+  assert.equal((await request('/api/pedidos', { ...payload, personalizacao: { corTampa: {} } }, headers)).status, 400);
   assert.equal((await request('/api/pedidos', { ...payload, itens: [{ id: 1, quantidade: -2 }] }, headers)).status, 400);
   assert.equal((await request('/api/pedidos', { ...payload, frete: { ...payload.frete, valor: -10 } }, headers)).status, 400);
   const results = await Promise.all(Array.from({ length: 5 }, () => request('/api/pedidos', payload, headers)));
@@ -58,6 +61,12 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
     assert.equal(result.status, 201); const data = await result.json(); assert.equal(data.numero, 1); assert.match(data.mensagem, /CPF: 123\.456\.789-01/); assert.match(data.mensagem, /TOTAL:\* R\$\s218,70/);
   }
   const orders = await (await request('/api/admin/pedidos', null, auth)).json();
+  assert.deepEqual(orders.pedidos[0].personalizacao, payload.personalizacao);
+  assert.deepEqual((await new OrderStore(dir).list())[0].personalizacao, payload.personalizacao);
+  const repeated = await (await request('/api/pedidos', payload, headers)).json();
+  assert.ok(repeated.mensagem.includes('Cor - Suporte da munição: Preto'));
+  assert.ok(repeated.mensagem.includes('Cor/Personalização - Tampa da caixa: Azul com nome Marco'));
+  assert.ok(repeated.mensagem.includes('Cor - Trava: Amarelo'));
   assert.equal(orders.pedidos[0].cliente.cpf, '123.456.789-01'); assert.equal((await new OrderStore(dir).list())[0].cliente.cpf, '123.456.789-01'); assert.equal(orders.pedidos.length, 1); assert.equal(orders.pedidos[0].subtotal, 199.8);
   assert.equal(orders.pedidos[0].total, 218.7); assert.equal(orders.pedidos[0].cliente.cep, '88370603');
   assert.equal(orders.pedidos[0].chave, undefined);
@@ -73,6 +82,9 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   assert.equal((await request(management + 'alterar', edit, auth)).status, 200);
   assert.equal((await request(management + 'alterar', edit, auth)).status, 409);
   let managed = (await (await request('/api/admin/pedidos', null, auth)).json()).pedidos[0];
+  assert.deepEqual(managed.personalizacao, payload.personalizacao);
+  const privateCheck = await (await request('/api/pedidos', payload, headers)).json();
+  assert.ok(!privateCheck.mensagem.includes('Embalagem para presente'));
   assert.equal(managed.cliente.cpf, '123.456.789-01'); assert.equal(managed.total, 37.02); assert.equal(managed.observacoes, edit.observacoes);
   assert.equal(managed.numero, 1); assert.equal(managed.dataHora, orders.pedidos[0].dataHora);
   assert.equal((await request(management + 'finalizar', { revisao: 2 }, auth)).status, 200);

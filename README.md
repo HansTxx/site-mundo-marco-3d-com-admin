@@ -112,3 +112,13 @@ O conteúdo das observações internas agora aparece em negrito no cartão do pe
 ## Fechar o carrinho clicando fora
 Com o carrinho aberto, clicar ou tocar na área escurecida fora dele fecha o carrinho e volta à loja. Clicar nos campos e botões dentro do carrinho continua funcionando normalmente. Os itens e dados preenchidos são mantidos; o botão X também continua disponível.
 
+
+## Versão 18.0 — observações do cliente no carrinho
+
+O carrinho possui três campos opcionais: Cor - Suporte da munição; Cor/Personalização - Tampa da caixa; Cor - Trava. Cada campo aceita até 1.000 caracteres e vale para o pedido. Quando houver mais de uma caixa com personalizações diferentes, o cliente pode identificar cada caixa no texto.
+
+Os textos são recuperados ao reabrir/recarregar o carrinho, salvos no servidor com o pedido e incluídos na mensagem do WhatsApp. Fazer outro pedido limpa esses três campos para iniciar uma nova personalização. A gravação valida o tipo e o tamanho dos textos; campos vazios são permitidos.
+
+No painel, aparecem em negrito na seção Observações do cliente e podem ser alterados no formulário do pedido, inclusive após finalizar. As Observações internas continuam separadas e não são enviadas pelo WhatsApp. Pedidos anteriores sem esses campos mostram Não informado e continuam editáveis. Alterações administrativas não modificam mensagens de WhatsApp já enviadas.
+
+Os dados, configurações, CPF, fotos e demais funcionalidades recebidos foram preservados. Ao atualizar, mantenha seu .env e a pasta data mais recentes, reinicie o servidor e recarregue o navegador. A suíte npm test passou; foram conferidos no navegador os campos do carrinho, a recuperação dos textos e a exibição no painel usando dados isolados de teste.

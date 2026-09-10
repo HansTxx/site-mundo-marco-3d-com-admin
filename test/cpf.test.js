@@ -19,7 +19,7 @@ test('máscara: digitação progressiva, colagem, remoção, limite e edição n
 
 test('dados locais preservam CPF, carrinho e dados antigos sem CPF', () => {
   const source = fs.readFileSync(require.resolve('../public/script.js'), 'utf8');
-  const fields = Object.fromEntries(['nome', 'email', 'telefone', 'cpf', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep'].map(id => [id, { value: '' }]));
+  const fields = Object.fromEntries(['corSuporte', 'corTampa', 'corTrava', 'nome', 'email', 'telefone', 'cpf', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep'].map(id => [id, { value: '' }]));
   let saved;
   const context = vm.createContext({ formatarCPF, console,
     document: { querySelector: s => fields[s.slice(1)], getElementById: id => fields[id] },
@@ -27,10 +27,14 @@ test('dados locais preservam CPF, carrinho e dados antigos sem CPF', () => {
   });
   vm.runInContext(source.slice(0, source.indexOf('function dinheiro')), context);
   fields.cpf.value = '12345678901'; fields.nome.value = 'Cliente teste';
+  fields.corSuporte.value = 'Preto'; fields.corTampa.value = 'Azul\nNome Marco'; fields.corTrava.value = 'Amarelo';
   vm.runInContext('carrinho = [{ id: 1, quantidade: 2 }]; salvarEstado()', context);
   assert.equal(JSON.parse(saved).cliente.cpf, '123.456.789-01');
+  assert.deepEqual(JSON.parse(saved).personalizacao, { corSuporte: 'Preto', corTampa: 'Azul\nNome Marco', corTrava: 'Amarelo' });
+  fields.corTampa.value = '';
   fields.cpf.value = ''; vm.runInContext('carregarEstado()', context);
   assert.equal(fields.cpf.value, '123.456.789-01');
+  assert.equal(fields.corTampa.value, 'Azul\nNome Marco');
   assert.equal(JSON.parse(saved).carrinho[0].quantidade, 2);
   saved = JSON.stringify({ cliente: { nome: 'Antigo' }, carrinho: [] }); fields.cpf.value = '';
   vm.runInContext('carregarEstado()', context);

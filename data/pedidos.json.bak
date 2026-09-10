@@ -1,10 +1,45 @@
 [
   {
+    "cliente": {
+      "nome": "fdafgwfew",
+      "email": "matheuswiggers2@gmail.com",
+      "telefone": "(48) 99993-1943",
+      "logradouro": "AVENIDA PREFEITO CIRINO ADOLFO CABRAL",
+      "cidade": "Navegantes",
+      "estado": "SC",
+      "numero": "935",
+      "complemento": "Apto 501",
+      "cep": "88370060",
+      "cpf": "116.803.079-08"
+    },
+    "itens": [
+      {
+        "id": 1,
+        "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
+        "quantidade": 2,
+        "preco": 99.9,
+        "subtotal": 199.8
+      }
+    ],
+    "subtotal": 199.8,
+    "frete": {
+      "id": "1",
+      "nome": "PAC",
+      "prazo": "5 dias úteis",
+      "valor": 24.51
+    },
+    "total": 224.31,
+    "personalizacao": {
+      "corSuporte": "preto",
+      "corTampa": "rosa",
+      "corTrava": "roxo"
+    },
     "numero": 1,
-    "chave": "294784ddf82c6a3a5205dfdd06e303b437612deae241572e",
-    "fingerprint": "8966be62897b8d354f82c3d747494244085d82db266b594e13e3731baf5bd05b",
-    "excluidoEm": "2026-09-09T20:51:31.832Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-09T20:51:31.832Z"
+    "dataHora": "2026-09-10T20:28:18.987Z",
+    "chave": "e8ea40522106be818652f17255f9d0a9331d4af294d4851e",
+    "fingerprint": "0883de7fc52df2299c49ef7cac4c7a67237eec50dd857c3057e7cb225f80e0a0",
+    "revisao": 1,
+    "status": "aberto",
+    "observacoes": ""
   }
 ]

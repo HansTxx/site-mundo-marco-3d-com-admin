@@ -519,3 +519,4 @@ h2 { margin-top: 0; }
   .rodape h2 { margin-bottom: 12px; }
 }
 .pedido-salvo{margin:16px 0;padding:16px;background:#eff7ed;border:1px solid #bbd4b5;border-radius:8px;line-height:1.5}.pedido-salvo a{display:inline-block;margin-right:14px;color:#126d3d;font-weight:bold}.pedido-salvo a:not([href]){display:none}.pedido-salvo button{padding:8px;cursor:pointer}
+.personalizacao-pedido{margin:24px 0}.personalizacao-pedido>p{font-size:13px;line-height:1.5;color:#555}.personalizacao-pedido textarea{box-sizing:border-box;width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;resize:vertical;font:inherit}.personalizacao-pedido textarea:focus{outline:2px solid #168a4a;outline-offset:2px}

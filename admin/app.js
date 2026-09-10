@@ -1,6 +1,7 @@
 'use strict';
 const $ = selector => document.querySelector(selector);
 const money = value => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const personalizacaoLabels = { corSuporte: 'Cor - Suporte da munição', corTampa: 'Cor/Personalização - Tampa da caixa', corTrava: 'Cor - Trava' };
 let activeStatus = 'aberto';
 let allOrders = [];
 const tabLabels = { aberto: 'Pedidos', producao: 'Em produção', finalizado: 'Finalizados', reaberto: 'Reabertos' };
@@ -73,6 +74,10 @@ function renderOrder(order) {
   const badge = element('span', { aberto: 'Pedidos', producao: 'Em produção', finalizado: 'Finalizado', reaberto: 'Reaberto' }[orderStatus(order)], 'badge ' + (order.status === 'producao' ? 'production' : order.status === 'finalizado' ? 'done' : order.status === 'reaberto' ? 'reopened' : ''));
   head.append(badge);
   const notes = element('section', null, 'notes');
+  notes.append(element('h3', 'Observações do cliente'));
+  for (const [key, label] of Object.entries(personalizacaoLabels)) {
+    notes.append(element('p', `${label}: ${order.personalizacao?.[key] || 'Não informado'}`, 'note-text'));
+  }
   notes.append(element('h3', 'Observações internas'), element('p', order.observacoes || 'Nenhuma observação adicionada.', 'note-text'));
   if (order.finalizadoEm) notes.append(element('small', 'Finalizado em ' + new Date(order.finalizadoEm).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })));
   const actions = element('div', null, 'order-actions');
@@ -201,6 +206,12 @@ function openEditor(order, focusNotes = false) {
   const shippingPrice = field(shipping, 'Valor do frete (R$)', order.frete.valor, { type: 'number' });
   shippingPrice.addEventListener('input', updateTotals);
   form.append(element('h3', 'Frete e valores'), shipping, summary);
+  form.append(element('h3', 'Observações do cliente'));
+  const personalizacaoInputs = {};
+  for (const [key, label] of Object.entries(personalizacaoLabels)) {
+    personalizacaoInputs[key] = field(form, label, order.personalizacao?.[key] || '', { multiline: true, max: 1000, required: false });
+    personalizacaoInputs[key].classList.add('observacoes-input');
+  }
   const observation = field(form, 'Observações internas', order.observacoes || '', { multiline: true, max: 5000, required: false });
   observation.classList.add('observacoes-input');
   const feedback = element('p', '', 'edit-error'); feedback.setAttribute('role', 'status');
@@ -215,6 +226,7 @@ function openEditor(order, focusNotes = false) {
     event.preventDefault(); if (savingEdit) return;
     if (!rows.length) { feedback.textContent = 'Adicione pelo menos um item.'; return; }
     const body = { revisao: order.revisao || 1,
+      personalizacao: Object.fromEntries(Object.entries(personalizacaoInputs).map(([key, input]) => [key, input.value.trim()])),
       cliente: Object.fromEntries(Object.entries(inputs).map(([key, input]) => [key, input.value.trim()])),
       itens: rows.map(row => ({ id: row.id, nome: row.name.value, quantidade: Number(row.qty.value), preco: Number(row.price.value) })),
       frete: { id: shippingId.value, nome: shippingName.value, prazo: shippingTerm.value, valor: Number(shippingPrice.value) }, observacoes: observation.value };

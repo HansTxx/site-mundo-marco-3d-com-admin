@@ -25,8 +25,8 @@
       <div>
         <p class="etiqueta">Bem-Vindos a nossa loja!</p>
         <h1>Escolha a opção que melhor se encaixa no que você precisa!</h1>
-        
       </div>
+	  <p class="etiqueta">Personalize sua caixa da forma que preferir, podendo escolher a cor da tampa, trava e do suporte de munição. A tampa pode ser personalizada com nome ou imagem também.</p>
     </section>
 
     <section>
@@ -142,6 +142,23 @@
       <div class="resumo">
         <div><span>Subtotal</span><strong id="subtotal">R$ 0,00</strong></div>
       </div>
+
+      <section class="personalizacao-pedido" aria-labelledby="personalizacaoTitulo">
+        <h3 id="personalizacaoTitulo">Observações e personalização</h3>
+        <p>Campos opcionais. Se houver mais de um produto, indique a qual caixa cada observação se refere.</p>
+        <div class="campo">
+          <label for="corSuporte">Cor - Suporte da munição</label>
+          <textarea id="corSuporte" maxlength="1000" rows="2" placeholder="Ex.: preto"></textarea>
+        </div>
+        <div class="campo">
+          <label for="corTampa">Cor/Personalização - Tampa da caixa</label>
+          <textarea id="corTampa" maxlength="1000" rows="3" placeholder="Ex.: azul, com o nome Marco"></textarea>
+        </div>
+        <div class="campo">
+          <label for="corTrava">Cor - Trava</label>
+          <textarea id="corTrava" maxlength="1000" rows="2" placeholder="Ex.: amarelo"></textarea>
+        </div>
+      </section>
 
       <div class="frete-box">
         <h3>Calcular frete</h3>
