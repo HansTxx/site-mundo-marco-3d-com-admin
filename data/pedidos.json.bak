@@ -1,5 +1,21 @@
 [
   {
+    "numero": 1,
+    "chave": "9e4e9f7d62e4d303486efa76fdf6f20347d13187e85242f2",
+    "fingerprint": "0883de7fc52df2299c49ef7cac4c7a67237eec50dd857c3057e7cb225f80e0a0",
+    "excluidoEm": "2026-09-10T20:37:35.048Z",
+    "revisao": 2,
+    "atualizadoEm": "2026-09-10T20:37:35.048Z"
+  },
+  {
+    "numero": 2,
+    "chave": "5805bb0890810df8c568e561a028cbfcd72d024f76f413b5",
+    "fingerprint": "d606befe86bb9a4c6fe495ae463a8b6898d8a2716ffa9caa281c47964fb07281",
+    "excluidoEm": "2026-09-10T20:37:31.767Z",
+    "revisao": 2,
+    "atualizadoEm": "2026-09-10T20:37:31.767Z"
+  },
+  {
     "cliente": {
       "nome": "fdafgwfew",
       "email": "matheuswiggers2@gmail.com",
@@ -14,30 +30,30 @@
     },
     "itens": [
       {
-        "id": 1,
-        "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
-        "quantidade": 2,
-        "preco": 99.9,
-        "subtotal": 199.8
+        "id": 2,
+        "nome": "Caixa para munição 357, 38 e 22LR.",
+        "quantidade": 1,
+        "preco": 119.9,
+        "subtotal": 119.9
       }
     ],
-    "subtotal": 199.8,
+    "subtotal": 119.9,
     "frete": {
-      "id": "1",
-      "nome": "PAC",
-      "prazo": "5 dias úteis",
-      "valor": 24.51
+      "id": "2",
+      "nome": "SEDEX",
+      "prazo": "1 dias úteis",
+      "valor": 15.7
     },
-    "total": 224.31,
+    "total": 135.6,
     "personalizacao": {
-      "corSuporte": "preto",
-      "corTampa": "rosa",
-      "corTrava": "roxo"
+      "corSuporte": "dsa",
+      "corTampa": "dsa",
+      "corTrava": "das"
     },
-    "numero": 1,
-    "dataHora": "2026-09-10T20:28:18.987Z",
-    "chave": "e8ea40522106be818652f17255f9d0a9331d4af294d4851e",
-    "fingerprint": "0883de7fc52df2299c49ef7cac4c7a67237eec50dd857c3057e7cb225f80e0a0",
+    "numero": 3,
+    "dataHora": "2026-09-10T20:37:41.694Z",
+    "chave": "9a7c254bf6d8d652adaf10a86e38bd699de86dba4132f640",
+    "fingerprint": "d920553267de76ec248fafb883c8f822539e221a0ed80775f944ad7aea5b1dfc",
     "revisao": 1,
     "status": "aberto",
     "observacoes": ""

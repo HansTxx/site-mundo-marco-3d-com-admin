@@ -122,3 +122,15 @@ Os textos são recuperados ao reabrir/recarregar o carrinho, salvos no servidor 
 No painel, aparecem em negrito na seção Observações do cliente e podem ser alterados no formulário do pedido, inclusive após finalizar. As Observações internas continuam separadas e não são enviadas pelo WhatsApp. Pedidos anteriores sem esses campos mostram Não informado e continuam editáveis. Alterações administrativas não modificam mensagens de WhatsApp já enviadas.
 
 Os dados, configurações, CPF, fotos e demais funcionalidades recebidos foram preservados. Ao atualizar, mantenha seu .env e a pasta data mais recentes, reinicie o servidor e recarregue o navegador. A suíte npm test passou; foram conferidos no navegador os campos do carrinho, a recuperação dos textos e a exibição no painel usando dados isolados de teste.
+
+## Versão 19.0 — limpar carrinho após registrar o pedido
+
+Após o servidor confirmar que o pedido foi salvo, o carrinho limpa automaticamente os produtos, quantidades, as três observações de cores/personalização e as opções de frete. Os dados do cliente (nome, e-mail, telefone, CPF, endereço, complemento e CEP) permanecem preenchidos e salvos no navegador.
+
+O pedido completo permanece no painel administrativo. A mensagem de WhatsApp é gerada antes da limpeza e o link Abrir WhatsApp continua disponível na confirmação, inclusive quando uma nova aba é bloqueada. A limpeza ocorre após registrar o pedido no site: o site não consegue detectar quando o cliente efetivamente toca em enviar dentro do WhatsApp.
+
+Se houver erro ou a confirmação do servidor não chegar, os itens e as observações permanecem para tentar novamente. Após o sucesso, a chave da tentativa anterior também é removida, permitindo uma nova compra intencional.
+
+Validação: npm test passou com 7 testes, incluindo confirmação de sucesso, preservação dos dados do cliente ao recarregar, link de WhatsApp após a limpeza e manutenção do carrinho em caso de falha. Dados de teste não acompanham a pasta data.
+
+Ao atualizar, preserve seu .env e a pasta data mais recentes, reinicie o servidor e recarregue o site.

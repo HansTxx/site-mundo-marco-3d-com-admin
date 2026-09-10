@@ -325,6 +325,20 @@ function selecionarFrete(index) {
 let enviandoPedido = false;
 let tentativaPedido = null;
 try { tentativaPedido = JSON.parse(sessionStorage.getItem('marco-tentativa')); } catch {}
+function limparDadosDoPedido() {
+  carrinho = [];
+  freteSelecionado = null;
+  opcoesFrete = [];
+  camposPersonalizacao.forEach(id => { document.getElementById(id).value = ''; });
+  tentativaPedido = null;
+  try { sessionStorage.removeItem('marco-tentativa'); } catch {}
+  renderCarrinho();
+  try { salvarEstado(); }
+  catch {
+    // Avoid restoring an old order if storage cannot be updated.
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  }
+}
 async function finalizarPedido() {
   if (enviandoPedido) return;
   if (!carrinho.length) {
@@ -392,9 +406,13 @@ async function finalizarPedido() {
     const url = 'https://wa.me/' + config.whatsappNumber + '?text=' + encodeURIComponent(dados.mensagem);
     $('#pedidoSalvoTexto').textContent = 'Pedido #' + String(dados.numero).padStart(5, '0') + ' registrado. Envie a mensagem no WhatsApp para conversar com a loja.';
     $('#abrirWhatsappPedido').href = url; aviso.hidden = false;
-    try { salvarEstado(); } catch {}
-    if (aba && !aba.closed) aba.location.replace(url);
-    else mostrarToast('Pedido salvo! Use o botão Abrir WhatsApp abaixo para enviar.');
+    limparDadosDoPedido();
+    try {
+      if (aba && !aba.closed) aba.location.replace(url);
+      else mostrarToast('Pedido salvo! Use o botão Abrir WhatsApp abaixo para enviar.');
+    } catch {
+      mostrarToast('Pedido salvo! Use o botão Abrir WhatsApp abaixo para enviar.');
+    }
   } catch (erro) {
     if (aba && !aba.closed) aba.close();
     $('#pedidoSalvoTexto').textContent = erro.message + ' Seus dados foram mantidos para tentar novamente.';
@@ -461,10 +479,6 @@ if (opcoesFrete.length) {
 
 $('#novoPedido').addEventListener('click', () => {
   if (enviandoPedido) return;
-  tentativaPedido = null;
-  try { sessionStorage.removeItem('marco-tentativa'); } catch {}
-  carrinho = []; freteSelecionado = null; opcoesFrete = [];
-  camposPersonalizacao.forEach(id => { document.getElementById(id).value = ''; });
-  renderCarrinho(); salvarEstado(); $('#pedidoSalvo').hidden = true;
+  limparDadosDoPedido(); $('#pedidoSalvo').hidden = true;
   mostrarToast('Carrinho pronto para um novo pedido.');
 });
