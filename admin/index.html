@@ -21,7 +21,7 @@
     </section>
     <p id="status" role="status" aria-live="polite">Verificando acesso…</p>
     <section id="painel" hidden>
-      <div class="heading"><div><span class="eyebrow">SUA LOJA EM ORDEM</span><h1>Pedidos recebidos</h1><p>Do mais antigo para o mais recente.</p></div><div class="actions"><button id="atualizar">Atualizar</button><button id="sair" class="secondary">Sair</button></div></div>
+      <div class="heading"><div><span class="eyebrow">SUA LOJA EM ORDEM</span><h1>Pedidos recebidos</h1><p>Do mais antigo para o mais recente.</p></div><div class="actions"><button id="minhaConta" class="secondary">Minha conta</button><button id="atualizar">Atualizar</button><button id="sair" class="secondary">Sair</button></div></div>
       <div class="summary"><strong id="contagem">0 pedidos</strong><span>Registrados no site · envio pelo WhatsApp e pagamento a confirmar</span></div>
       <div class="order-tabs" role="tablist" aria-label="Situação dos pedidos">
         <button id="tab-aberto" role="tab" aria-selected="true" aria-controls="pedidos" data-status="aberto">Em andamento (0)</button>
@@ -32,5 +32,22 @@
       <div id="pedidos" role="tabpanel" aria-labelledby="tab-aberto" tabindex="0"></div>
     </section>
   </main>
+  <dialog id="contaDialog" class="editor" aria-labelledby="contaTitulo">
+    <h2 id="contaTitulo">Minha conta</h2>
+    <p id="contaDescricao"></p>
+    <form id="contaForm">
+      <label for="contaUsuario">Usuário do administrador</label>
+      <input id="contaUsuario" autocomplete="username" minlength="3" maxlength="80" required>
+      <label for="contaAtual" id="contaAtualLabel">Sua senha atual</label>
+      <input id="contaAtual" type="password" autocomplete="current-password" maxlength="500" required>
+      <label for="contaNova">Nova senha do administrador</label>
+      <input id="contaNova" type="password" autocomplete="new-password" minlength="12" maxlength="200" required>
+      <label for="contaConfirmacao">Confirme a nova senha</label>
+      <input id="contaConfirmacao" type="password" autocomplete="new-password" minlength="12" maxlength="200" required>
+      <p>Use uma senha exclusiva com pelo menos 12 caracteres.</p>
+      <p id="contaMensagem" role="status"></p>
+      <div class="edit-actions"><button id="contaSalvar" type="submit">Salvar acesso</button><button id="contaCancelar" type="button" class="secondary">Cancelar</button></div>
+    </form>
+  </dialog>
 </body>
 </html>

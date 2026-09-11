@@ -1,21 +1,5 @@
 [
   {
-    "numero": 1,
-    "chave": "9e4e9f7d62e4d303486efa76fdf6f20347d13187e85242f2",
-    "fingerprint": "0883de7fc52df2299c49ef7cac4c7a67237eec50dd857c3057e7cb225f80e0a0",
-    "excluidoEm": "2026-09-10T20:37:35.048Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-10T20:37:35.048Z"
-  },
-  {
-    "numero": 2,
-    "chave": "5805bb0890810df8c568e561a028cbfcd72d024f76f413b5",
-    "fingerprint": "d606befe86bb9a4c6fe495ae463a8b6898d8a2716ffa9caa281c47964fb07281",
-    "excluidoEm": "2026-09-10T20:37:31.767Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-10T20:37:31.767Z"
-  },
-  {
     "cliente": {
       "nome": "fdafgwfew",
       "email": "matheuswiggers2@gmail.com",
@@ -30,32 +14,56 @@
     },
     "itens": [
       {
-        "id": 2,
-        "nome": "Caixa para munição 357, 38 e 22LR.",
+        "id": 1,
+        "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
         "quantidade": 1,
-        "preco": 119.9,
-        "subtotal": 119.9
+        "preco": 99.9,
+        "subtotal": 99.9
       }
     ],
-    "subtotal": 119.9,
+    "subtotal": 99.9,
     "frete": {
       "id": "2",
       "nome": "SEDEX",
       "prazo": "1 dias úteis",
-      "valor": 15.7
+      "valor": 14.48
     },
-    "total": 135.6,
+    "total": 114.38,
     "personalizacao": {
-      "corSuporte": "dsa",
-      "corTampa": "dsa",
-      "corTrava": "das"
+      "corSuporte": "",
+      "corTampa": "",
+      "corTrava": ""
     },
-    "numero": 3,
-    "dataHora": "2026-09-10T20:37:41.694Z",
-    "chave": "9a7c254bf6d8d652adaf10a86e38bd699de86dba4132f640",
-    "fingerprint": "d920553267de76ec248fafb883c8f822539e221a0ed80775f944ad7aea5b1dfc",
+    "numero": 1,
+    "dataHora": "2026-09-11T16:49:13.703Z",
+    "chave": "41e645f29149494d29300f1104a26be5c4205d8c0c9c2bb6",
+    "fingerprint": "c1678d653fac30119c35d389c9156a14a9cb5a361425c93850121237a1b7f3b4",
     "revisao": 1,
     "status": "aberto",
     "observacoes": ""
+  },
+  {
+    "numero": 2,
+    "chave": "64a0d14e0e07f73f881890fef5f12aabe2dd06c0e0051194",
+    "fingerprint": "8d90e4094ce2a580773c4c3f83d5fed6aa630401fb7c98d95c3c9f2c75d4cc58",
+    "excluidoEm": "2026-09-11T16:50:00.072Z",
+    "revisao": 2,
+    "atualizadoEm": "2026-09-11T16:50:00.072Z"
+  },
+  {
+    "numero": 3,
+    "chave": "9e995cf6a3a580c51cf302729c80480d792997061dddf8a7",
+    "fingerprint": "6dc14ff990af5da0bc6f94ea8833350710ef34ca46e2b904ec09962ecb6af906",
+    "excluidoEm": "2026-09-11T16:50:01.877Z",
+    "revisao": 2,
+    "atualizadoEm": "2026-09-11T16:50:01.877Z"
+  },
+  {
+    "numero": 4,
+    "chave": "1a68c64f5baed704e2ff21d6a3f75ac5044ca3ffa2d0ec2c",
+    "fingerprint": "c3d7094e7456c19eb90a4ee1d363edc3224bc5a90a710bb61225ffe50dbd99e8",
+    "excluidoEm": "2026-09-11T16:50:15.196Z",
+    "revisao": 2,
+    "atualizadoEm": "2026-09-11T16:50:15.196Z"
   }
 ]

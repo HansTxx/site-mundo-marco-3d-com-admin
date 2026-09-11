@@ -122,8 +122,18 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   const config = await (await request('/config.js')).text();
   assert.ok(!config.includes(process.env.ADMIN_PASSWORD));
   assert.ok((await (await request('/produtos.js')).text()).startsWith('const produtos ='));
-  for (let i = 0; i < 9; i++) await request('/api/admin/login', { usuario: 'no', senha: 'no' });
+  // Successful logins do not consume the failure budget.
+  for (let i = 0; i < 12; i++) {
+    assert.equal((await request('/api/admin/login', { usuario: 'admin-teste', senha: process.env.ADMIN_PASSWORD })).status, 200);
+  }
+  for (let i = 0; i < 9; i++) assert.equal((await request('/api/admin/login', { usuario: 'no', senha: 'no' })).status, 401);
+  // A successful login clears preceding failures.
+  assert.equal((await request('/api/admin/login', { usuario: 'admin-teste', senha: process.env.ADMIN_PASSWORD })).status, 200);
+  for (let i = 0; i < 10; i++) assert.equal((await request('/api/admin/login', { usuario: 'no', senha: 'no' })).status, 401);
   assert.equal((await request('/api/admin/login', { usuario: 'no', senha: 'no' })).status, 429);
+  const blocked = await request('/api/admin/login', { usuario: 'admin-teste', senha: process.env.ADMIN_PASSWORD });
+  assert.equal(blocked.status, 429);
+  assert.ok(Number(blocked.headers.get('retry-after')) > 0 && Number(blocked.headers.get('retry-after')) <= 300);
 });
 
 test('produção exige HTTPS e emite cookie Secure atrás do proxy configurado', async t => {

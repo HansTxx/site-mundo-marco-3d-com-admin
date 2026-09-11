@@ -31,7 +31,7 @@ for (const button of document.querySelectorAll('[role="tab"]')) {
   });
 }
 function status(message = '', error = false) { $('#status').textContent = message; $('#status').classList.toggle('error', error); }
-function loggedOut() { editor.close(); allOrders = []; activeStatus = 'aberto'; $('#painel').hidden = true; $('#pedidos').replaceChildren(); $('#login').hidden = false; }
+function loggedOut() { $('#contaDialog').close(); $('#contaForm').reset(); editor.close(); allOrders = []; activeStatus = 'aberto'; $('#painel').hidden = true; $('#pedidos').replaceChildren(); $('#login').hidden = false; }
 async function api(url, body) {
   const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin', ...(body ? { method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Loja-Request': '1' }, body: JSON.stringify(body) } : {}) });
@@ -238,3 +238,34 @@ function openEditor(order, focusNotes = false) {
   editor.append(form); editor.showModal();
   if (focusNotes) observation.focus();
 }
+
+let savingAccount = false;
+$('#minhaConta').addEventListener('click', async () => {
+  try {
+    const account = await api('/api/admin/conta');
+    $('#contaForm').reset(); $('#contaMensagem').textContent = '';
+    $('#contaUsuario').value = account.adminUsuario;
+    $('#contaTitulo').textContent = account.role === 'master' ? 'Gerenciar acesso do administrador' : 'Minha conta';
+    $('#contaDescricao').textContent = account.role === 'master'
+      ? 'Você entrou como mestre. Redefina o acesso do administrador sem precisar da senha dele. Seu acesso mestre permanece o mesmo.'
+      : 'Altere seu usuário e sua senha. Após salvar, entre novamente. As outras sessões do administrador serão encerradas.';
+    $('#contaAtualLabel').textContent = account.role === 'master' ? 'Sua senha mestre atual' : 'Sua senha atual';
+    $('#contaDialog').showModal(); $('#contaUsuario').focus();
+  } catch (error) { status(error.message, true); }
+});
+$('#contaCancelar').addEventListener('click', () => { if (!savingAccount) { $('#contaDialog').close(); $('#contaForm').reset(); } });
+$('#contaDialog').addEventListener('cancel', event => { if (savingAccount) event.preventDefault(); else $('#contaForm').reset(); });
+$('#contaForm').addEventListener('submit', async event => {
+  event.preventDefault(); if (savingAccount) return;
+  if ($('#contaNova').value !== $('#contaConfirmacao').value) { $('#contaMensagem').textContent = 'A confirmação da nova senha não confere.'; return; }
+  savingAccount = true; $('#contaSalvar').disabled = true; $('#contaCancelar').disabled = true;
+  $('#contaMensagem').textContent = 'Salvando…';
+  try {
+    const result = await api('/api/admin/conta', { usuario: $('#contaUsuario').value.trim(), senhaAtual: $('#contaAtual').value,
+      novaSenha: $('#contaNova').value, confirmacao: $('#contaConfirmacao').value });
+    $('#contaDialog').close(); $('#contaForm').reset();
+    if (result.entrarNovamente) loggedOut();
+    status(result.entrarNovamente ? 'Acesso atualizado. Entre com seu novo usuário e senha.' : 'Acesso do administrador redefinido. Seu acesso mestre continua ativo.');
+  } catch (error) { $('#contaMensagem').textContent = error.message; status(error.message, true); }
+  finally { savingAccount = false; $('#contaSalvar').disabled = false; $('#contaCancelar').disabled = false; }
+});

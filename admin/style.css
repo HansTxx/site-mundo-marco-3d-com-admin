@@ -4,3 +4,5 @@
 .badge.production{background:#ffe5cb;color:#824508}
 
 .notes .note-text, .edit-field textarea.observacoes-input { font-weight: 700; }
+
+#contaDialog{max-width:560px}#contaForm .edit-actions button{width:auto;margin:0}.heading .actions{flex-wrap:wrap}#contaMensagem{color:#a02518}

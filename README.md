@@ -11,7 +11,7 @@
 
 Se não existir .env, copie .env.example para .env e preencha também WHATSAPP_NUMBER (DDI + DDD + número, apenas dígitos), CEP_ORIGEM e a configuração da SuperFrete. Sempre reinicie o servidor após mudar o .env.
 
-ADMIN_USER e ADMIN_PASSWORD ficam somente no servidor. Se estiverem vazios, o painel recusa o login com uma orientação para configurar. A loja continua funcionando.
+ADMIN_USER e ADMIN_PASSWORD servem apenas para iniciar a conta comum se ainda não existir admin-account.json. Após a migração, o arquivo privado passa a definir o acesso. MASTER_USER e MASTER_PASSWORD configuram o acesso mestre. Veja o guia da versão 21.0 abaixo.
 
 ## Como os pedidos funcionam
 
@@ -28,7 +28,7 @@ ADMIN_USER e ADMIN_PASSWORD ficam somente no servidor. Se estiverem vazios, o pa
 
 A sessão usa um identificador aleatório de 256 bits, guardado em cookie HttpOnly e SameSite=Strict, com validade absoluta de 8 horas. O cookie fica restrito às rotas administrativas. Há limitação de tentativas de login, verificação de origem nas operações de escrita e proteção contra incorporação do painel em outros sites. Dados de clientes são inseridos na página como texto, sem executar HTML.
 
-As sessões ficam na memória do processo. Sair invalida a sessão atual; reiniciar o servidor invalida todas. Para trocar a senha, altere ADMIN_PASSWORD no .env e reinicie. O endpoint que lista pedidos exige sessão válida; a tela pública de login não contém pedidos nem credenciais.
+As sessões ficam na memória do processo. Sair invalida a sessão atual; reiniciar o servidor invalida todas. Para trocar o acesso comum, use Minha conta. Para trocar o acesso mestre, altere MASTER_USER/MASTER_PASSWORD no .env e reinicie. O endpoint que lista pedidos exige sessão válida; a tela pública de login não contém pedidos nem credenciais.
 
 ## Hospedar com HTTPS
 
@@ -134,3 +134,46 @@ Se houver erro ou a confirmação do servidor não chegar, os itens e as observa
 Validação: npm test passou com 7 testes, incluindo confirmação de sucesso, preservação dos dados do cliente ao recarregar, link de WhatsApp após a limpeza e manutenção do carrinho em caso de falha. Dados de teste não acompanham a pasta data.
 
 Ao atualizar, preserve seu .env e a pasta data mais recentes, reinicie o servidor e recarregue o site.
+
+
+## Versão 21.0 — Minha conta e acesso mestre
+
+### Ativar pela primeira vez
+
+1. Preserve seu .env e sua pasta data atuais ao atualizar o código. Os pedidos existentes não precisam de migração.
+2. No .env, preencha MASTER_USER e MASTER_PASSWORD com seu login mestre exclusivo e uma senha longa, diferente da senha comum. Os campos foram incluídos vazios: não há senha mestre padrão. Use um usuário diferente de ADMIN_USER. Use aspas se a senha contiver # ou espaços. Configure isso uma vez e reinicie o servidor. Na hospedagem pública, mantenha HTTPS e NODE_ENV=production conforme as instruções acima.
+3. Entre em /admin com seu acesso comum já existente. No primeiro login correto, o servidor cria data/admin-account.json, ou esse arquivo dentro de DATA_DIR, com usuário, salt aleatório e hash scrypt da senha. A senha original não é salva nesse JSON.
+4. Alternativamente, entre como mestre, abra Minha conta e defina diretamente o usuário e a senha comuns. Isso também cria o arquivo privado, dispensando o login inicial comum.
+5. Depois de confirmar que o novo login comum e o mestre funcionam, remova ADMIN_USER e ADMIN_PASSWORD do .env e reinicie. Eles não são mais necessários após a criação do arquivo. Enquanto esse arquivo existir, alterar ADMIN_PASSWORD no .env não muda a senha comum.
+
+Se deixar MASTER_USER ou MASTER_PASSWORD vazio, o acesso mestre fica desativado; o administrador comum continua funcionando. Não compartilhe o .env com quem deve ter somente acesso ao painel.
+
+### Administrador comum
+
+O botão Minha conta permite alterar o próprio usuário e a senha informando a senha atual, nova senha e confirmação. A senha nova precisa ter entre 12 e 200 caracteres; o usuário, de 3 a 80 caracteres, sem espaços (letras, números, ponto, hífen, sublinhado e @). Ao salvar, todas as sessões do administrador são encerradas, incluindo a atual. Entre novamente com o novo acesso. O administrador não pode ver nem alterar as credenciais mestre.
+
+### Mestre
+
+Use a mesma página /admin com MASTER_USER e MASTER_PASSWORD. Você pode gerenciar os pedidos e abrir Minha conta para criar/redefinir o usuário e a senha do administrador, confirmando sua própria senha mestre, sem precisar da senha dele. A redefinição encerra as sessões comuns e mantém a sessão mestre. A senha mestre nunca é alterada por esse formulário.
+
+### Armazenamento, segurança e recuperação
+
+admin-account.json fica fora da pasta public. Inclua-o no backup privado da pasta data e preserve-o em atualizações. O servidor serializa as alterações e grava por arquivo temporário sincronizado seguido de renomeação. Uma falha na escrita não confirma a troca. Não são criados backups automáticos de senhas antigas; faça backups privados da pasta com o servidor parado. O conteúdo não aparece nas rotas públicas nem nas respostas de conta.
+
+Use um único processo Node e disco persistente, como já exigido para os pedidos. Cookies continuam HttpOnly/SameSite, com Secure em produção. A troca exige sessão, confirmação da senha atual e origem válida; tentativas são limitadas. A revisão da conta é verificada nas sessões comuns, inclusive quando uma troca coincide com outro login. Mudanças já em execução antes da troca podem terminar; novas requisições com sessões revogadas são recusadas.
+
+Não apague admin-account.json para trocar senha. Se o arquivo desaparecer e os antigos ADMIN_USER/ADMIN_PASSWORD ainda estiverem configurados, o acesso inicial poderá ser criado novamente. Se o JSON estiver corrompido, ele não é substituído automaticamente nem há retorno às credenciais antigas: pare o servidor e restaure uma cópia válida e privada. Para simples esquecimento de senha, use o mestre pelo painel.
+
+O controle de permissões vale para o painel: alguém com acesso aos arquivos ou ao servidor pode modificar a configuração, portanto restrinja esse acesso ao dono da loja.
+
+### Validação
+
+npm test passou com 8 testes, incluindo migração, ausência de senha em texto aberto, troca própria, senha atual incorreta, tentativa de usar o nome mestre, recuperação pelo mestre, persistência após nova leitura, revogação das sessões, bloqueio de origem externa, erro de escrita e JSON corrompido. A entrada do mestre e a apresentação do formulário foram conferidas no navegador com configurações de teste isoladas. Nenhuma credencial de teste foi inserida no .env entregue.
+
+## Limite de login atualizado
+
+O login agora conta somente respostas de credenciais incorretas. Um login correto zera o contador de falhas do IP. Após 10 falhas sem um login bem-sucedido, novas tentativas são bloqueadas até terminar a janela de 5 minutos, contada da primeira falha. Reiniciar o servidor zera os contadores em memória. Verificações simultâneas também são limitadas enquanto estão em processamento. Erros internos do servidor não contam como senha incorreta.
+
+O ajuste vale para a entrada de administrador e mestre. O limite separado para alterações de conta permanece como antes. Testado com mais de 10 logins corretos, zeragem após falhas e bloqueio após 10 falhas.
+
+Para aplicar apenas esta correção em uma instalação da versão 21.0 com Minha conta, substitua lib/admin.js e reinicie o servidor. Preserve seu .env e a pasta data atuais (incluindo admin-account.json). O ZIP completo contém a base da última versão preparada nesta conversa, não alterações locais posteriores.
