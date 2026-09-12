@@ -189,11 +189,11 @@ function openEditor(order, focusNotes = false) {
   }
   function addItem(item = {}) {
     const row = element('div', null, 'edit-item');
-    const name = field(row, 'Produto / descrição', item.nome, { max: 300 });
+    const name = field(row, 'Produto / descrição', item.nome, { max: 420 });
     const qty = field(row, 'Quantidade', item.quantidade ?? 1, { type: 'number', min: 1, limit: 999, step: '1' });
     const price = field(row, 'Preço unitário (R$)', item.preco ?? 0, { type: 'number' });
     const remove = element('button', 'Remover item', 'danger'); remove.type = 'button';
-    const record = { row, name, qty, price, id: item.id }; rows.push(record);
+    const record = { row, name, qty, price, id: item.id, variante: item.variante }; rows.push(record);
     remove.addEventListener('click', () => { rows.splice(rows.indexOf(record), 1); row.remove(); updateTotals(); });
     row.append(remove); list.append(row);
     qty.addEventListener('input', updateTotals); price.addEventListener('input', updateTotals);
@@ -230,7 +230,7 @@ function openEditor(order, focusNotes = false) {
     const body = { revisao: order.revisao || 1,
       personalizacao: Object.fromEntries(Object.entries(personalizacaoInputs).map(([key, input]) => [key, input.value.trim()])),
       cliente: Object.fromEntries(Object.entries(inputs).map(([key, input]) => [key, input.value.trim()])),
-      itens: rows.map(row => ({ id: row.id, nome: row.name.value, quantidade: Number(row.qty.value), preco: Number(row.price.value) })),
+      itens: rows.map(row => ({ id: row.id, variante: row.variante, nome: row.name.value, quantidade: Number(row.qty.value), preco: Number(row.price.value) })),
       frete: { id: shippingId.value, nome: shippingName.value, prazo: shippingTerm.value, valor: Number(shippingPrice.value) }, observacoes: observation.value };
     savingEdit = true; save.disabled = true; cancel.disabled = true; feedback.textContent = 'Salvando…';
     try { await api(`/api/admin/pedidos/${order.numero}/alterar`, body); editor.close(); await load(); status('Alterações do pedido #' + String(order.numero).padStart(5, '0') + ' salvas.'); }

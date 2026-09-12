@@ -83,6 +83,15 @@ function dinheiro(valor) {
   });
 }
 
+function itemDisponivel(item) {
+  const p = produtoPorId(item.id);
+  return p && Number.isInteger(item.quantidade) && item.quantidade > 0 && item.quantidade <= 999 && ((p.variantes || []).length ? p.variantes.some(v => v.nome === item.variante) : !item.variante);
+}
+function limparItensIndisponiveis() {
+  const antes = carrinho.length;
+  carrinho = carrinho.filter(itemDisponivel);
+  if (antes !== carrinho.length) mostrarToast('O catálogo mudou. Selecione novamente os modelos dos itens removidos do carrinho.');
+}
 function produtoPorId(id) {
   return produtos.find(p => p.id === id);
 }
@@ -102,6 +111,10 @@ function renderProdutos() {
         <h3>${escapeHtml(p.nome)}</h3>
         <p class="descricao">${escapeHtml(p.descricao)}</p>
         <div class="preco">${dinheiro(p.preco)}</div>
+        <div class="opcoes-produto">
+          ${(p.variantes || []).length ? `<label for="modelo-${p.id}">Modelo</label><select id="modelo-${p.id}" class="form-select" required><option value="">Selecione o modelo</option>${p.variantes.map(v => `<option value="${escapeHtml(v.nome)}">${escapeHtml(v.nome)}</option>`).join('')}</select>` : ''}
+          <label for="qtd-${p.id}">Quantidade</label><input id="qtd-${p.id}" class="form-control" type="number" min="1" max="999" step="1" value="1">
+        </div>
         <button class="adicionar btn btn-dark" onclick="adicionar(${p.id})">Adicionar ao carrinho</button>
       </div>
     </article>
@@ -196,9 +209,16 @@ function renderProdutos() {
 }
 
 function adicionar(id) {
-  const existente = carrinho.find(i => i.id === id);
-  if (existente) existente.quantidade++;
-  else carrinho.push({ id, quantidade: 1 });
+  const p = produtoPorId(id);
+  const variante = document.getElementById(`modelo-${id}`)?.value || '';
+  const quantidade = Number(document.getElementById(`qtd-${id}`)?.value);
+  if ((p.variantes || []).length && !p.variantes.some(v => v.nome === variante)) { mostrarToast('Selecione o modelo que deseja comprar.'); document.getElementById(`modelo-${id}`).focus(); return; }
+  if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > 999) { mostrarToast('Informe uma quantidade inteira de 1 a 999.'); return; }
+  const existente = carrinho.find(i => i.id === id && (i.variante || '') === variante);
+  if (existente && existente.quantidade + quantidade > 999) { mostrarToast('O limite é de 999 unidades por modelo.'); return; }
+  if (!existente && carrinho.length >= 100) { mostrarToast('O limite é de 100 itens diferentes no carrinho.'); return; }
+  if (existente) existente.quantidade += quantidade;
+  else carrinho.push({ id, variante, quantidade });
 
   freteSelecionado = null;
   renderCarrinho();
@@ -207,13 +227,14 @@ function adicionar(id) {
   mostrarToast("Produto adicionado ao carrinho.");
 }
 
-function alterarQuantidade(id, delta) {
-  const item = carrinho.find(i => i.id === id);
+function alterarQuantidade(index, delta) {
+  const item = carrinho[index];
   if (!item) return;
 
+  if (item.quantidade + delta > 999) { mostrarToast('O limite é de 999 unidades por modelo.'); return; }
   item.quantidade += delta;
   if (item.quantidade <= 0) {
-    carrinho = carrinho.filter(i => i.id !== id);
+    carrinho.splice(index, 1);
   }
 
   freteSelecionado = null;
@@ -221,8 +242,8 @@ function alterarQuantidade(id, delta) {
   salvarEstado();
 }
 
-function remover(id) {
-  carrinho = carrinho.filter(i => i.id !== id);
+function remover(index) {
+  carrinho.splice(index, 1);
   freteSelecionado = null;
   renderCarrinho();
   salvarEstado();
@@ -238,7 +259,8 @@ function subtotal() {
 function pesoTotal() {
   return carrinho.reduce((soma, item) => {
     const produto = produtoPorId(item.id);
-    return soma + produto.peso * item.quantidade;
+    const medidas = (produto.variantes || []).find(v => v.nome === item.variante) || produto;
+    return soma + medidas.peso * item.quantidade;
   }, 0);
 }
 
@@ -248,21 +270,22 @@ function renderCarrinho() {
   if (!carrinho.length) {
     $("#itensCarrinho").innerHTML = `<div class="vazio">Seu carrinho está vazio.</div>`;
   } else {
-    $("#itensCarrinho").innerHTML = carrinho.map(item => {
+    $("#itensCarrinho").innerHTML = carrinho.map((item, index) => {
       const p = produtoPorId(item.id);
       return `
         <div class="item">
           <div class="mini-imagem">${p.id}</div>
           <div>
             <h4>${escapeHtml(p.nome)}</h4>
+            ${item.variante ? `<div class="modelo-carrinho">Modelo: ${escapeHtml(item.variante)}</div>` : ''}
             <div>${dinheiro(p.preco)}</div>
             <div class="quantidade">
-              <button aria-label="Diminuir quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${p.id}, -1)">−</button>
+              <button aria-label="Diminuir quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${index}, -1)">−</button>
               <span>${item.quantidade}</span>
-              <button aria-label="Aumentar quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${p.id}, 1)">+</button>
+              <button aria-label="Aumentar quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${index}, 1)">+</button>
             </div>
           </div>
-          <button class="remover" onclick="remover(${p.id})">Remover</button>
+          <button class="remover" onclick="remover(${index})">Remover</button>
         </div>
       `;
     }).join("");
@@ -320,7 +343,7 @@ async function calcularFrete() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cep,
-        itens: carrinho.map(({ id, quantidade }) => ({ id, quantidade }))
+        itens: carrinho.map(({ id, quantidade, variante }) => ({ id, quantidade, variante }))
       })
     });
 
@@ -436,7 +459,7 @@ async function finalizarPedido() {
   for (const id of ['nome', 'email', 'telefone', 'cpf', 'logradouro', 'cidade', 'estado', 'numero', 'complemento', 'cep']) {
     cliente[id] = document.getElementById(id).value.trim();
   }
-  const payload = { cliente, itens: carrinho.map(i => ({ id: i.id, quantidade: i.quantidade })), frete: freteSelecionado, personalizacao: lerPersonalizacao() };
+  const payload = { cliente, itens: carrinho.map(i => ({ id: i.id, quantidade: i.quantidade, variante: i.variante })), frete: freteSelecionado, personalizacao: lerPersonalizacao() };
   const snapshot = JSON.stringify(payload);
   if (!tentativaPedido || tentativaPedido.snapshot !== snapshot) {
     const random = new Uint8Array(24); crypto.getRandomValues(random);
@@ -533,7 +556,7 @@ $("#telefone").addEventListener("input", (e) => {
 
 camposPersonalizacao.forEach(id => document.getElementById(id).addEventListener('input', salvarEstado));
 carregarEstado();
-carrinho = carrinho.filter(i => produtoPorId(i.id) && Number.isInteger(i.quantidade) && i.quantidade > 0 && i.quantidade <= 999);
+limparItensIndisponiveis();
 freteSelecionado = null; opcoesFrete = [];
 renderProdutos();
 renderCarrinho();
@@ -554,7 +577,7 @@ async function atualizarCatalogo() {
   const next = await response.json();
   if (JSON.stringify(next) === JSON.stringify(produtos)) return false;
   produtos.splice(0, produtos.length, ...next);
-  carrinho = carrinho.filter(i => produtoPorId(i.id));
+  limparItensIndisponiveis();
   freteSelecionado = null; opcoesFrete = [];
   renderProdutos(); renderCarrinho(); renderOpcoesFrete(); salvarEstado();
   return true;

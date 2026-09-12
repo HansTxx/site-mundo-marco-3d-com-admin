@@ -49,12 +49,12 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   const auth = { Cookie: cookie.split(';')[0] };
   const payload = { cliente: { nome: '<img src=x onerror=alert(1)>', email: 'teste@example.com', telefone: '(47) 99999-9999', cpf: '12345678901',
     logradouro: 'Rua de teste', numero: '920', complemento: 'Casa 1', cidade: 'Navegantes', estado: 'SC', cep: '88370-603' },
-    itens: [{ id: 1, quantidade: 2 }], frete: { id: 'demo', nome: 'Entrega teste', prazo: '5 dias úteis', valor: 18.9 }, subtotal: 0, total: 0 };
+    itens: [{ id: 1, variante: '38 TPC', quantidade: 2 }], frete: { id: 'demo', nome: 'Entrega teste', prazo: '5 dias úteis', valor: 18.9 }, subtotal: 0, total: 0 };
   const headers = { 'Idempotency-Key': 'test-unique-order-0001' };
   payload.personalizacao = { corSuporte: 'Preto', corTampa: 'Azul com nome Marco\n<script>texto</script>', corTrava: 'Amarelo' };
   assert.equal((await request('/api/pedidos', { ...payload, personalizacao: { corSuporte: 'a'.repeat(1001) } }, headers)).status, 400);
   assert.equal((await request('/api/pedidos', { ...payload, personalizacao: { corTampa: {} } }, headers)).status, 400);
-  assert.equal((await request('/api/pedidos', { ...payload, itens: [{ id: 1, quantidade: -2 }] }, headers)).status, 400);
+  assert.equal((await request('/api/pedidos', { ...payload, itens: [{ id: 1, variante: '38 TPC', quantidade: -2 }] }, headers)).status, 400);
   assert.equal((await request('/api/pedidos', { ...payload, frete: { ...payload.frete, valor: -10 } }, headers)).status, 400);
   const results = await Promise.all(Array.from({ length: 5 }, () => request('/api/pedidos', payload, headers)));
   for (const result of results) {
@@ -70,7 +70,7 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   assert.equal(orders.pedidos[0].cliente.cpf, '123.456.789-01'); assert.equal((await new OrderStore(dir).list())[0].cliente.cpf, '123.456.789-01'); assert.equal(orders.pedidos.length, 1); assert.equal(orders.pedidos[0].subtotal, 199.8);
   assert.equal(orders.pedidos[0].total, 218.7); assert.equal(orders.pedidos[0].cliente.cep, '88370603');
   assert.equal(orders.pedidos[0].chave, undefined);
-  assert.equal((await request('/api/pedidos', { ...payload, itens: [{ id: 1, quantidade: 1 }] }, headers)).status, 409);
+  assert.equal((await request('/api/pedidos', { ...payload, itens: [{ id: 1, variante: '38 TPC', quantidade: 1 }] }, headers)).status, 409);
   // Management works on legacy records too (revision defaults to 1).
   const management = '/api/admin/pedidos/1/';
   assert.equal((await request(management + 'excluir', { revisao: 1 })).status, 401);
@@ -117,7 +117,7 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   assert.equal(disk[1].numero, 2);
   assert.equal((await request('/api/admin/logout', {}, auth)).status, 200);
   assert.equal((await request('/api/admin/pedidos', null, auth)).status, 401);
-  const frete = await request('/api/frete', { cep: '88370603', itens: [{ id: 1, quantidade: 1 }] });
+  const frete = await request('/api/frete', { cep: '88370603', itens: [{ id: 1, variante: '38 TPC', quantidade: 1 }] });
   assert.equal(frete.status, 200); assert.equal((await frete.json()).opcoes.length, 2);
   const config = await (await request('/config.js')).text();
   assert.ok(!config.includes(process.env.ADMIN_PASSWORD));

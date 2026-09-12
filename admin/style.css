@@ -37,3 +37,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(max-width:650px){body>header{padding:18px 16px;gap:12px}.marca{font-size:20px}.tag{font-size:9px}body>header>div{gap:8px}body>header>a{padding:8px 10px;font-size:10px}main{padding:0 16px;margin:28px auto}.login{padding:26px;margin-top:32px}.login h1{font-size:28px}h1{font-size:30px}.actions{gap:8px}.actions .btn{flex:1 1 auto;padding:10px 13px}.order-tabs{display:flex;gap:4px}.order-tabs .btn{flex:1 1 45%;font-size:11px;padding:9px 10px}.order header{padding:18px}.details{padding:18px;gap:22px}.table-wrap{padding:0 18px}.notes{padding:18px}.totals{padding:18px;gap:22px}.order-actions{padding:16px 18px}.order-actions .btn{flex:1 1 45%}.editor{padding:22px 18px}.edit-grid{grid-template-columns:1fr}.edit-actions .btn{flex:1 1 45%}.product-admin-row>div{min-width:140px}.product-image-row{gap:9px}.product-admin-row .btn{flex:1}.summary{padding:18px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
+
+.product-variants { grid-column: 1 / -1; min-width: 0; }
+.variant-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; border: 1px solid #d8dde5; border-radius: 10px; padding: 16px; margin-bottom: 16px; min-width: 0; }
+.variant-row legend { font-size: 1rem; font-weight: 600; width: auto; padding: 0 6px; }
+.variant-row .edit-field:first-of-type { grid-column: 1 / -1; }
+@media (max-width: 480px) { .variant-row { grid-template-columns: minmax(0, 1fr); } }

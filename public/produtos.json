@@ -14,7 +14,30 @@
     "largura": 15,
     "altura": 10,
     "comprimento": 20,
-    "descricao": "Caixa com capacidade para 50 munições."
+    "descricao": "Caixa com capacidade para 50 munições.",
+    "variantes": [
+      {
+        "nome": "38 TPC",
+        "peso": 0.5,
+        "largura": 15,
+        "comprimento": 20,
+        "altura": 10
+      },
+      {
+        "nome": ".380",
+        "peso": 0.5,
+        "largura": 15,
+        "comprimento": 20,
+        "altura": 10
+      },
+      {
+        "nome": "9mm",
+        "peso": 0.5,
+        "largura": 15,
+        "comprimento": 20,
+        "altura": 10
+      }
+    ]
   },
   {
     "id": 2,
@@ -31,6 +54,29 @@
     "largura": 18,
     "altura": 12,
     "comprimento": 24,
-    "descricao": "Caixa com capacidade para 50 munições."
+    "descricao": "Caixa com capacidade para 50 munições.",
+    "variantes": [
+      {
+        "nome": "357",
+        "peso": 0.7,
+        "largura": 18,
+        "comprimento": 24,
+        "altura": 12
+      },
+      {
+        "nome": "38",
+        "peso": 0.7,
+        "largura": 18,
+        "comprimento": 24,
+        "altura": 12
+      },
+      {
+        "nome": "22LR",
+        "peso": 0.7,
+        "largura": 18,
+        "comprimento": 24,
+        "altura": 12
+      }
+    ]
   }
 ]

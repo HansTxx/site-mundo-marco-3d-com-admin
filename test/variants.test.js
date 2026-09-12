@@ -1,0 +1,60 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const os = require('node:os');
+const path = require('node:path');
+const ProductStore = require('../lib/product-store');
+const seed = require('../public/produtos.json');
+
+test('modelos: medidas individuais persistem, frete soma cada modelo e rejeita seleção inválida', async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'variant-store-'));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const store = new ProductStore(directory, seed);
+  const original = (await store.list())[0];
+  const variantes = [{ nome: 'Pequeno', peso: 0.2, largura: 10, comprimento: 15, altura: 2 }, { nome: 'Grande', peso: 0.8, largura: 20, comprimento: 30, altura: 6 }];
+  const saved = await store.save({ ...original, variantes }, original.id);
+  assert.deepEqual((await new ProductStore(directory, seed).list())[0].variantes, variantes);
+  const parcel = await store.parcel([{ id: original.id, variante: 'Pequeno', quantidade: 2 }, { id: original.id, variante: 'Grande', quantidade: 3 }]);
+  assert.deepEqual(parcel, { peso: 2.8, largura: 20, comprimento: 30, altura: 22, valorDeclarado: 499.5 });
+  for (const itens of [[{ id: original.id, quantidade: 1 }], [{ id: original.id, variante: 'Inexistente', quantidade: 1 }], [{ id: original.id, variante: 'Pequeno', quantidade: 1 }, { id: original.id, variante: 'Pequeno', quantidade: 2 }]]) await assert.rejects(store.parcel(itens), { status: 400 });
+  for (const variantes of [[{ nome: 'Inválido', peso: -1 }], [{ nome: 'Inválido', altura: '3' }], [{ nome: 'Inválido', peso: 0.0001 }], [{ nome: '' }], [{ nome: 'Igual' }, { nome: 'igual' }]]) await assert.rejects(store.save({ ...saved, variantes }, original.id), { status: 400 });
+  const plain = await store.save({ ...saved, variantes: [] }, original.id);
+  assert.equal((await store.parcel([{ id: original.id, quantidade: 2 }])).peso, original.peso * 2);
+  await assert.rejects(store.parcel([{ id: original.id, variante: 'Pequeno', quantidade: 1 }]), { status: 400 });
+  const legacy = await store.save({ ...plain, variantes: ['Modelo antigo'] }, original.id);
+  assert.equal(legacy.variantes[0].peso, original.peso);
+});
+
+test('HTTP: modelos no cadastro, no frete e no pedido persistido', async t => {
+  const http = require('node:http');
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'variant-http-'));
+  let shippingPayload;
+  const carrier = http.createServer(async (req, res) => {
+    let body = ''; for await (const chunk of req) body += chunk;
+    shippingPayload = JSON.parse(body);
+    res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify([{ id: 1, name: 'Teste', price: 22, delivery_time: 3 }]));
+  }).listen(0, '127.0.0.1');
+  await new Promise(r => carrier.once('listening', r));
+  Object.assign(process.env, { DATA_DIR: directory, ADMIN_USER: 'qa-user', ADMIN_PASSWORD: 'qa-password-test-only', MASTER_USER: '', MASTER_PASSWORD: '', NODE_ENV: 'development', DEMO_MODE: 'false', SUPERFRETE_TOKEN: 'test-only-token', CEP_ORIGEM: '88370603', SUPERFRETE_API_URL: `http://127.0.0.1:${carrier.address().port}`, WHATSAPP_NUMBER: '5547999999999' });
+  const server = require('../server').listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r));
+  t.after(async () => { await new Promise(r => server.close(r)); await new Promise(r => carrier.close(r)); await fs.rm(directory, { recursive: true, force: true }); });
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const post = (url, data, headers = {}) => fetch(base + url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Loja-Request': '1', ...headers }, body: JSON.stringify(data) });
+  const login = await post('/api/admin/login', {usuario:'qa-user',senha:'qa-password-test-only'});
+  const auth = { Cookie: login.headers.get('set-cookie').split(';')[0] };
+  const original = (await (await fetch(base+'/api/produtos')).json())[1];
+  const variantes = [{nome:'Pequeno',peso:0.2,largura:10,comprimento:15,altura:2}, {nome:'Grande',peso:0.8,largura:20,comprimento:30,altura:6}];
+  const edited = await post('/api/admin/produtos/2', {...original,variantes}, auth); assert.equal(edited.status,200);
+  const itens = [{id:2,variante:'Pequeno',quantidade:2},{id:2,variante:'Grande',quantidade:3}];
+  const shipping = await post('/api/frete', {cep:'88370603',itens}); assert.equal(shipping.status,200);
+  assert.deepEqual(shippingPayload.package,{weight:2.8,height:22,width:20,length:30});
+  assert.equal(shippingPayload.options.insurance_value,599.5);
+  const payload = {cliente:{nome:'Cliente teste',email:'teste@example.com',telefone:'47999999999',cpf:'',logradouro:'Rua teste',cidade:'Navegantes',estado:'SC',numero:'10',complemento:'',cep:'88370603'},itens,frete:{id:'1',nome:'Teste',prazo:'3 dias',valor:22},personalizacao:{corTampa:'2 pequenas azuis e 3 grandes pretas',corSuporte:'',corTrava:''}};
+  const key = {'Idempotency-Key':'qa-variant-order-12345678901234567890'};
+  const response = await post('/api/pedidos',payload,key); assert.equal(response.status,201,await response.clone().text());
+  const result = await response.json(); assert.match(result.mensagem,/Modelo: Pequeno/); assert.match(result.mensagem,/Modelo: Grande/);
+  const order = JSON.parse(await fs.readFile(path.join(directory,'pedidos.json'),'utf8'))[0];
+  assert.deepEqual(order.itens.map(i=>[i.variante,i.quantidade]),[['Pequeno',2],['Grande',3]]);
+  assert.equal(order.total,621.5);
+  const invalid = await post('/api/pedidos',{...payload,itens:[{id:2,variante:'Falso',quantidade:1}]},{'Idempotency-Key':'qa-invalid-variant-12345678901234567890'}); assert.equal(invalid.status,400);
+});

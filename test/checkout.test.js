@@ -61,3 +61,27 @@ test('falha preserva pedido, observações e chave para tentar novamente', async
   assert.ok(f.session.has('marco-tentativa'));
   assert.equal(f.fields.abrirWhatsappPedido.href, undefined);
 });
+
+test('carrinho separa modelos, mantém quantidades e envia a escolha no pedido', async () => {
+  const f = fixture();
+  f.fields['modelo-2'] = {value:'Pequeno',focus(){}};
+  f.fields['qtd-2'] = {value:'2'};
+  vm.runInContext(`const produtos = [{id:2,nome:'Caixa',preco:10,peso:1,variantes:[{nome:'Pequeno',peso:0.2},{nome:'Grande',peso:0.8}]}]; carrinho=[]; abrirCarrinho=()=>{}; mostrarToast=()=>{};`, f.context);
+  vm.runInContext('adicionar(2)', f.context);
+  f.fields['modelo-2'].value='Grande'; f.fields['qtd-2'].value='3';
+  vm.runInContext('adicionar(2)', f.context);
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(carrinho)', f.context)), [{id:2,variante:'Pequeno',quantidade:2},{id:2,variante:'Grande',quantidade:3}]);
+  vm.runInContext('alterarQuantidade(0, 1)', f.context);
+  assert.equal(vm.runInContext('carrinho[0].quantidade', f.context),3);
+  assert.ok(Math.abs(vm.runInContext('pesoTotal()', f.context)-3)<1e-9);
+  vm.runInContext('remover(0)', f.context);
+  assert.equal(vm.runInContext('carrinho[0].variante', f.context),'Grande');
+  f.fields['qtd-2'].value='0'; vm.runInContext('adicionar(2)',f.context);
+  assert.equal(vm.runInContext('carrinho[0].quantidade',f.context),3);
+  f.fields['qtd-2'].value='2';f.fields['modelo-2'].value=''; vm.runInContext('adicionar(2)',f.context);
+  assert.equal(vm.runInContext('carrinho.length',f.context),1);
+  vm.runInContext('salvarEstado(); carrinho=[]; carregarEstado(); freteSelecionado={id:"demo",nome:"Teste",valor:18.9};',f.context);
+  const done=vm.runInContext('finalizarPedido()',f.context);
+  assert.equal(f.submitted().itens[0].variante,'Grande');
+  f.respond(true);await done;
+});

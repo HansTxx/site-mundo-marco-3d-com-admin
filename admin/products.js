@@ -52,6 +52,32 @@ function editProduct(product = {}) {
     } else input.maxLength = key === 'nome' ? 300 : 5000;
     fields[key] = input; wrap.append(label, input); grid.append(wrap);
   }
+  const variantsWrap = element('section', null, 'product-variants');
+  variantsWrap.append(element('h3', 'Modelos / opções do produto'), element('p', 'Adicione até 50 modelos. Cada modelo pode ter largura, comprimento e altura em centímetros e peso em quilogramas próprios. Campos de medidas vazios usam os valores gerais acima. O preço é o mesmo para todos os modelos.'));
+  const variantsList = element('div'); const variantRows = []; let nextVariant = 0;
+  function addVariant(variant = {}) {
+    if (productBusy || variantRows.length >= 50) return;
+    if (typeof variant === 'string') variant = { nome: variant };
+    const row = element('fieldset', null, 'variant-row');
+    row.append(element('legend', 'Modelo'));
+    const inputs = {}; const serial = nextVariant++;
+    for (const [key, caption] of Object.entries({ nome: 'Nome do modelo', largura: 'Largura (cm)', comprimento: 'Comprimento (cm)', altura: 'Altura (cm)', peso: 'Peso (kg)' })) {
+      const wrap = element('div', null, 'edit-field'); const label = element('label', caption);
+      const input = element('input'); input.id = `variante-${serial}-${key}`; label.htmlFor = input.id;
+      input.value = variant[key] ?? ''; input.required = key === 'nome';
+      if (key === 'nome') { input.maxLength = 100; input.placeholder = 'Ex.: modelo pequeno'; }
+      else { input.type = 'number'; input.step = key === 'peso' ? '0.001' : '0.01'; input.min = input.step; input.max = '1000'; input.placeholder = 'Usar medida geral'; }
+      inputs[key] = input; wrap.append(label, input); row.append(wrap);
+    }
+    const record = { row, inputs }; variantRows.push(record);
+    const remove = element('button', 'Remover modelo', 'secondary'); remove.type = 'button';
+    remove.onclick = () => { if (productBusy) return; variantRows.splice(variantRows.indexOf(record), 1); row.remove(); };
+    row.append(remove); variantsList.append(row);
+  }
+  const addVariantButton = element('button', 'Adicionar modelo', 'secondary'); addVariantButton.type = 'button';
+  addVariantButton.onclick = () => { addVariant(); variantRows.at(-1)?.inputs.nome.focus(); };
+  (product.variantes || []).forEach(addVariant);
+  variantsWrap.append(variantsList, addVariantButton); grid.append(variantsWrap);
   form.append(grid, element('h3', 'Imagens'), element('p', 'A primeira imagem será a capa. Envie até 20 fotos (PNG, JPG, WEBP ou GIF), com no máximo 4 MB cada. Use as setas para ordenar.'));
   let images = [...(product.imagens || [])];
   const gallery = element('div', null, 'product-image-list');
@@ -77,7 +103,7 @@ function editProduct(product = {}) {
   const save = element('button', 'Salvar produto'); save.type = 'submit';
   const cancel = element('button', 'Voltar ao catálogo', 'secondary'); cancel.type = 'button';
   cancel.onclick = () => { if (!productBusy && confirm('Descartar as alterações não salvas?')) showProducts(); };
-  function busy(value) { productBusy = value; save.disabled = value; cancel.disabled = value; upload.disabled = value; renderImages(); }
+  function busy(value) { productBusy = value; form.querySelectorAll('input, textarea, select, button').forEach(input => { input.disabled = value; }); save.disabled = value; cancel.disabled = value; upload.disabled = value; renderImages(); }
   upload.onchange = async () => {
     const files = Array.from(upload.files);
     if (files.length + images.length > 20 || files.some(f => f.size > 4 * 1024 * 1024)) { feedback.textContent = 'Limite: 20 imagens, até 4 MB cada.'; upload.value = ''; return; }
@@ -95,6 +121,7 @@ function editProduct(product = {}) {
     event.preventDefault(); if (productBusy) return;
     if (!images.length) { feedback.textContent = 'Adicione pelo menos uma imagem.'; return; }
     const body = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, ['nome', 'descricao'].includes(key) ? input.value : Number(input.value)]));
+    body.variantes = variantRows.map(({ inputs }) => Object.fromEntries(Object.entries(inputs).map(([key, input]) => [key, key === 'nome' ? input.value.trim() : (input.value === '' ? Number(fields[key].value) : Number(input.value))])));
     body.imagens = images; body.revisao = product.revisao;
     busy(true); feedback.textContent = 'Salvando…';
     try { await api('/api/admin/produtos' + (product.id ? '/' + product.id : ''), body); await showProducts(); status('Produto salvo e disponível na loja.'); }
