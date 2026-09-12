@@ -1,3 +1,46 @@
 [
-
+  {
+    "cliente": {
+      "nome": "dsadasdas",
+      "email": "dsadasdas@email.cin",
+      "telefone": "(32) 52352-5252",
+      "logradouro": "Av. Des. Maynard",
+      "cidade": "Aracaju",
+      "estado": "SE",
+      "numero": "652",
+      "complemento": "lkoja",
+      "cep": "88370060",
+      "cpf": ""
+    },
+    "itens": [
+      {
+        "id": 1,
+        "variante": "38 TPC",
+        "nome": "Caixa para munição 38 TPC, .380 e 9mm. — Modelo: 38 TPC",
+        "quantidade": 2,
+        "preco": 99.9,
+        "subtotal": 199.8
+      }
+    ],
+    "subtotal": 199.8,
+    "frete": {
+      "id": "2",
+      "nome": "SEDEX",
+      "prazo": "1 dias úteis",
+      "valor": 15.63
+    },
+    "total": 215.43,
+    "personalizacao": {
+      "corSuporte": "",
+      "corTampa": "",
+      "corTrava": ""
+    },
+    "numero": 1,
+    "dataHora": "2026-09-12T19:16:15.955Z",
+    "chave": "b289e14bf7c6a2f172b523e49c822c9f9200d761871e8132",
+    "fingerprint": "acf3f7aa5898582a1be9ca3ca916281667aa80d3c97cd9971e5714ee92abae44",
+    "revisao": 1,
+    "status": "aberto",
+    "observacoes": ""
+  }
 ]
