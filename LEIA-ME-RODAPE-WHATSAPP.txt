@@ -1,0 +1,25 @@
+CORREÇÃO DO WHATSAPP NO RODAPÉ
+
+O link original foi preservado:
+https://api.whatsapp.com/send/?phone=5547933887815
+
+O ícone SVG continua embutido no HTML, sem depender de imagens externas,
+Bootstrap Icons, caminhos do Windows, JavaScript ou configuração do servidor.
+Os caminhos do Bootstrap, style.css, theme.css e favicon no HTML passaram
+ a ser relativos. A referência de versão do tema foi atualizada.
+
+Validação: servidor HTTP estático com nomes de arquivos sensíveis a maiúsculas
+ e minúsculas; navegador Edge em 390 e 1440 px; raiz e subpasta /loja/;
+JavaScript ligado e desligado. Os oito cenários passaram: botão visível,
+ícone com dimensões, link preservado e três folhas de estilo retornando 200.
+
+O desaparecimento original não foi reproduzido com o ZIP recebido. Não havia
+arquivo de ícone ausente nem caminho do Windows no botão. Se o problema
+persistir, confira se a publicação contém este public/index.html atualizado
+ e todos os arquivos de public; faça uma nova publicação e atualize o cache.
+
+Para hospedagem estática, a pasta pública é public. Esta correção é restrita
+ ao botão e aos caminhos dos estilos: não converte as APIs Node/Express.
+/config.js e /produtos.js são rotas do servidor original e não existem como
+arquivos estáticos neste projeto. Carrinho, pedidos e admin ainda precisam
+ do backend original ou de adaptação específica para o provedor.
