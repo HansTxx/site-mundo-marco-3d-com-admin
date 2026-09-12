@@ -265,6 +265,7 @@ function pesoTotal() {
 }
 
 function renderCarrinho() {
+  if (!catalogoCarregado) return;
   $("#contador").textContent = carrinho.reduce((s, i) => s + i.quantidade, 0);
 
   if (!carrinho.length) {
@@ -555,15 +556,11 @@ $("#telefone").addEventListener("input", (e) => {
 });
 
 camposPersonalizacao.forEach(id => document.getElementById(id).addEventListener('input', salvarEstado));
+const produtos = [];
+let catalogoCarregado = false;
+let consultaCatalogo = null;
 carregarEstado();
-limparItensIndisponiveis();
 freteSelecionado = null; opcoesFrete = [];
-renderProdutos();
-renderCarrinho();
-
-if (opcoesFrete.length) {
-  renderOpcoesFrete();
-}
 
 $('#novoPedido').addEventListener('click', () => {
   if (enviandoPedido) return;
@@ -572,16 +569,50 @@ $('#novoPedido').addEventListener('click', () => {
 });
 
 async function atualizarCatalogo() {
-  const response = await fetch('/api/produtos', { cache: 'no-store' });
-  if (!response.ok) throw new Error('Não foi possível atualizar o catálogo. Tente novamente.');
-  const next = await response.json();
-  if (JSON.stringify(next) === JSON.stringify(produtos)) return false;
-  produtos.splice(0, produtos.length, ...next);
-  limparItensIndisponiveis();
-  freteSelecionado = null; opcoesFrete = [];
-  renderProdutos(); renderCarrinho(); renderOpcoesFrete(); salvarEstado();
-  return true;
+  if (consultaCatalogo) return consultaCatalogo;
+  consultaCatalogo = (async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch('/api/produtos', { cache: 'no-store', signal: controller.signal });
+      if (!response.ok) throw new Error('Não foi possível atualizar o catálogo.');
+      const next = await response.json();
+      if (!Array.isArray(next)) throw new Error('Resposta inválida do catálogo.');
+      if (catalogoCarregado && JSON.stringify(next) === JSON.stringify(produtos)) return false;
+      produtos.splice(0, produtos.length, ...next);
+      catalogoCarregado = true;
+      limparItensIndisponiveis();
+      freteSelecionado = null; opcoesFrete = [];
+      renderProdutos(); renderCarrinho(); renderOpcoesFrete();
+      $('#abrirCarrinho').disabled = false;
+      $('#listaProdutos').setAttribute('aria-busy', 'false');
+      try { salvarEstado(); } catch { /* Storage unavailable must not hide the catalog. */ }
+      return true;
+    } finally { clearTimeout(timeout); }
+  })();
+  try { return await consultaCatalogo; }
+  finally { consultaCatalogo = null; }
 }
+
+async function iniciarCatalogo() {
+  const list = $('#listaProdutos');
+  list.textContent = 'Carregando produtos…';
+  list.setAttribute('aria-busy', 'true');
+  $('#abrirCarrinho').disabled = true;
+  try { await atualizarCatalogo(); }
+  catch {
+    list.setAttribute('aria-busy', 'false');
+    const message = document.createElement('p');
+    message.textContent = 'Não foi possível carregar os produtos. Tente novamente.';
+    const retry = document.createElement('button');
+    retry.type = 'button'; retry.className = 'btn btn-dark';
+    retry.textContent = 'Tentar novamente';
+    retry.addEventListener('click', iniciarCatalogo);
+    list.replaceChildren(message, retry);
+  }
+}
+
+iniciarCatalogo();
 setInterval(() => {
-  if (!document.hidden && !enviandoPedido && !$('#calcularFrete').disabled) atualizarCatalogo().catch(() => {});
+  if (catalogoCarregado && !document.hidden && !enviandoPedido && !$('#calcularFrete').disabled) atualizarCatalogo().catch(() => {});
 }, 30000);

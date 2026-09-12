@@ -19,7 +19,7 @@
     <span><small>O INCRÍVEL MUNDO</small>Marco <b>3D</b></span>
 	</a>
       <nav class="store-nav nav" aria-label="Navegação principal"><a class="nav-link" href="#catalogo">Produtos</a><a class="nav-link" href="#personalizar">Personalização</a><a class="nav-link" href="#contato">Contato</a></nav>
-      <button class="btn botao-carrinho" id="abrirCarrinho" aria-controls="fundoModal" aria-expanded="false">
+      <button class="btn botao-carrinho" id="abrirCarrinho" disabled aria-controls="fundoModal" aria-expanded="false">
         🛒 Carrinho <span id="contador">0</span>
       </button>
     </div>
@@ -40,7 +40,7 @@
 
     <section id="catalogo" aria-labelledby="catalogoTitulo">
       <div class="section-heading"><div><p class="eyebrow">EXPLORE A COLEÇÃO</p><h2 id="catalogoTitulo">Pequenos detalhes.<br>Grandes possibilidades.</h2></div><p>Encontre seu modelo.<br>A personalidade fica por sua conta.</p></div>
-      <div class="produtos" id="listaProdutos"></div>
+      <div class="produtos" id="listaProdutos" aria-live="polite" aria-busy="true"><p>Carregando produtos…</p></div>
     </section>
     <section id="personalizar" class="personalizar row g-4" aria-labelledby="personalizarTitulo"><div class="col-lg-5"><p class="eyebrow">CADA DETALHE CONTA</p><h2 id="personalizarTitulo">Uma caixa.<br>Do seu jeito.</h2><p>Informe suas preferências no carrinho. Se escolher mais de um produto, indique a qual caixa cada observação se refere.</p><a href="#catalogo" class="text-link">Escolher meu modelo <span aria-hidden="true">↗</span></a></div><div class="col-lg-7"><div class="custom-step"><span>01</span><div><h3>Tampa com personalidade</h3><p>Escolha a cor e conte qual nome ou imagem você quer incluir.</p></div></div><div class="custom-step"><span>02</span><div><h3>Suporte na sua cor</h3><p>Defina a cor do suporte de munição para combinar com a sua caixa.</p></div></div><div class="custom-step"><span>03</span><div><h3>O toque final</h3><p>Escolha a cor da trava e complete a sua combinação.</p></div></div></div></section>
   </main>
@@ -200,8 +200,8 @@
 
   <div class="store-toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <script src="/config.js"></script>
-  <script src="/produtos.js"></script>
   <script src="/cpf.js"></script>
-  <script src="script.js?v=carrossel-2"></script>
+  <script src="script.js?v=catalogo-api-1"></script>
 </body>
 </html>
+
