@@ -1,34 +1,3 @@
 [
-  {
-    "numero": 1,
-    "chave": "41e645f29149494d29300f1104a26be5c4205d8c0c9c2bb6",
-    "fingerprint": "c1678d653fac30119c35d389c9156a14a9cb5a361425c93850121237a1b7f3b4",
-    "excluidoEm": "2026-09-11T16:50:16.943Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:16.943Z"
-  },
-  {
-    "numero": 2,
-    "chave": "64a0d14e0e07f73f881890fef5f12aabe2dd06c0e0051194",
-    "fingerprint": "8d90e4094ce2a580773c4c3f83d5fed6aa630401fb7c98d95c3c9f2c75d4cc58",
-    "excluidoEm": "2026-09-11T16:50:00.072Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:00.072Z"
-  },
-  {
-    "numero": 3,
-    "chave": "9e995cf6a3a580c51cf302729c80480d792997061dddf8a7",
-    "fingerprint": "6dc14ff990af5da0bc6f94ea8833350710ef34ca46e2b904ec09962ecb6af906",
-    "excluidoEm": "2026-09-11T16:50:01.877Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:01.877Z"
-  },
-  {
-    "numero": 4,
-    "chave": "1a68c64f5baed704e2ff21d6a3f75ac5044ca3ffa2d0ec2c",
-    "fingerprint": "c3d7094e7456c19eb90a4ee1d363edc3224bc5a90a710bb61225ffe50dbd99e8",
-    "excluidoEm": "2026-09-11T16:50:15.196Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:15.196Z"
-  }
+
 ]

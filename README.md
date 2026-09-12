@@ -1,12 +1,14 @@
-# Mundo do Marco 3D — versão 14.0 com área administrativa
+# Mundo do Marco 3D — versão 23.0 com gerenciamento de produtos
+
+Comece pelo [guia de produtos](LEIA-ME-PRODUTOS.md) para instalar esta versão, preservar os dados e usar o novo painel.
 
 ## Iniciar no computador
 
 1. Instale Node.js (versão 18 ou superior; prefira uma versão LTS ainda mantida).
 2. Extraia o ZIP e abra o terminal na pasta que contém server.js e package.json.
-3. O arquivo .env mantém as configurações de frete e WhatsApp recebidas no projeto. Abra esse arquivo e preencha ADMIN_USER e ADMIN_PASSWORD. Não há uma senha padrão.
+3. Copie o .env da instalação anterior, ou crie-o a partir do .env.example, e preencha ADMIN_USER e ADMIN_PASSWORD. Não há uma senha padrão.
 4. Escolha uma senha exclusiva e longa (pelo menos 16 caracteres). Coloque o valor entre aspas se houver espaços ou #. Exemplo de formato: ADMIN_PASSWORD="sua senha exclusiva aqui". Não use esse exemplo como senha.
-5. Execute npm ci e depois npm start. As dependências também acompanham o pacote, permitindo executar npm start diretamente no ambiente compatível.
+5. Execute npm ci e depois npm start. O pacote não inclui node_modules; npm ci instala as dependências do arquivo de versões.
 6. Abra http://localhost:3000 para a loja e http://localhost:3000/admin para o painel. Não abra o index.html diretamente pelo explorador de arquivos.
 
 Se não existir .env, copie .env.example para .env e preencha também WHATSAPP_NUMBER (DDI + DDD + número, apenas dígitos), CEP_ORIGEM e a configuração da SuperFrete. Sempre reinicie o servidor após mudar o .env.

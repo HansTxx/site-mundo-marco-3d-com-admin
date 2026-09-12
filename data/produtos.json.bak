@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1,
+    "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
+    "preco": 99.9,
+    "imagem": "imagens/produto1.jpeg",
+    "imagens": [
+      "imagens/produto1.jpeg",
+      "imagens/produto1-foto2.jpeg",
+      "imagens/produto1-foto3.jpeg",
+      "imagens/produto1-foto4.jpeg",
+      "imagens/produto1-foto5.jpeg"
+    ],
+    "peso": 0.5,
+    "largura": 15,
+    "altura": 10,
+    "comprimento": 20,
+    "descricao": "Caixa com capacidade para 50 munições.",
+    "revisao": 1
+  },
+  {
+    "id": 2,
+    "nome": "Caixa para munição 357, 38 e 22LR.",
+    "preco": 119.9,
+    "imagem": "imagens/produto2.jpeg",
+    "imagens": [
+      "imagens/produto2.jpeg",
+      "imagens/produto2-foto2.jpeg",
+      "imagens/produto2-foto3.jpeg",
+      "imagens/produto2-foto4.jpeg",
+      "imagens/produto2-foto5.jpeg"
+    ],
+    "peso": 0.7,
+    "largura": 18,
+    "altura": 12,
+    "comprimento": 24,
+    "descricao": "Caixa com capacidade para 50 munições.",
+    "revisao": 1
+  },
+  {
+    "nome": "davi gay",
+    "descricao": "davi gay",
+    "preco": 100,
+    "peso": 5,
+    "largura": 60,
+    "comprimento": 60,
+    "altura": 60,
+    "imagens": [
+      "/media/dcfc6cab7aa18b6c2c3a7415e9d47d88093a8a09e0e3c77252397075fe641325.webp"
+    ],
+    "imagem": "/media/dcfc6cab7aa18b6c2c3a7415e9d47d88093a8a09e0e3c77252397075fe641325.webp",
+    "id": 3,
+    "revisao": 5,
+    "excluidoEm": "2026-09-12T00:50:31.753Z"
+  },
+  {
+    "nome": "davi gay",
+    "descricao": "dasdsada",
+    "preco": 10,
+    "peso": 0.5,
+    "largura": 25,
+    "comprimento": 10,
+    "altura": 54,
+    "imagens": [
+      "/media/dcfc6cab7aa18b6c2c3a7415e9d47d88093a8a09e0e3c77252397075fe641325.webp"
+    ],
+    "imagem": "/media/dcfc6cab7aa18b6c2c3a7415e9d47d88093a8a09e0e3c77252397075fe641325.webp",
+    "id": 4,
+    "revisao": 1
+  }
+]

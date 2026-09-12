@@ -8,10 +8,19 @@ if (process.env.TRUST_PROXY === '1') app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const SUPERFRETE_API_URL = process.env.SUPERFRETE_API_URL || "https://api.superfrete.com/api/v0/calculator";
 
+const productStore = new (require('./lib/product-store'))(process.env.DATA_DIR || path.join(__dirname, 'data'), require('./public/produtos.json'));
+app.use('/api/admin/imagens', express.json({ limit: '6mb' }));
 app.use(express.json({ limit: '64kb' }));
-require('./lib/admin')(app, require('./public/produtos.json'));
-app.get('/produtos.js', (req, res) => {
-  res.type('application/javascript').send(`const produtos = ${JSON.stringify(require('./public/produtos.json')).replace(/</g, '\\u003c')};`);
+require('./lib/admin')(app, productStore);
+app.get(['/api/produtos', '/produtos.json'], async (req, res, next) => {
+  try { res.set('Cache-Control', 'no-store').json(await productStore.list()); } catch (error) { next(error); }
+});
+app.use('/media', express.static(path.join(process.env.DATA_DIR || path.join(__dirname, 'data'), 'imagens'), { dotfiles: 'deny', setHeaders(res) { res.set('X-Content-Type-Options', 'nosniff'); } }));
+app.get('/produtos.js', async (req, res, next) => {
+  try { res.set('Cache-Control', 'no-store');
+  res.type('application/javascript').send(`const produtos = ${JSON.stringify(await productStore.list()).replace(/</g, '\\u003c')};`);
+  }
+  catch (error) { next(error); }
 });
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -78,11 +87,7 @@ app.get("/api/diagnostico-superfrete", async (req, res) => {
 app.post("/api/frete", async (req, res) => {
   try {
     const cepDestino = cleanCep(req.body.cep);
-    const peso = Number(req.body.peso || 0.5);
-    const largura = Number(req.body.largura || 15);
-    const altura = Number(req.body.altura || 10);
-    const comprimento = Number(req.body.comprimento || 20);
-    const valorDeclarado = Number(req.body.valor || 0);
+    const { peso, largura, altura, comprimento, valorDeclarado } = await productStore.parcel(req.body.itens);
 
     if (!validarCep(cepDestino)) {
       return res.status(400).json({ erro: "Informe um CEP válido com 8 números." });
@@ -222,6 +227,7 @@ app.post("/api/frete", async (req, res) => {
       respostaOriginal: dados
     });
   } catch (erro) {
+    if (erro.status) return res.status(erro.status).json({ erro: erro.message });
     console.error("Erro ao consultar a SuperFrete:", erro);
 
     let mensagem = "Não foi possível calcular o frete agora.";

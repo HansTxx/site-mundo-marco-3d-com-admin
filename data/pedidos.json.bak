@@ -1,69 +1,61 @@
 [
   {
     "cliente": {
-      "nome": "fdafgwfew",
-      "email": "matheuswiggers2@gmail.com",
-      "telefone": "(48) 99993-1943",
-      "logradouro": "AVENIDA PREFEITO CIRINO ADOLFO CABRAL",
-      "cidade": "Navegantes",
-      "estado": "SC",
-      "numero": "935",
-      "complemento": "Apto 501",
+      "nome": "dsadasdas",
+      "email": "dsadasdas@email.cin",
+      "telefone": "(32) 52352-5252",
+      "logradouro": "Av. Des. Maynard",
+      "cidade": "Aracaju",
+      "estado": "SE",
+      "numero": "652",
+      "complemento": "lkoja",
       "cep": "88370060",
-      "cpf": "116.803.079-08"
+      "cpf": ""
     },
     "itens": [
       {
-        "id": 1,
-        "nome": "Caixa para munição 38 TPC, .380 e 9mm.",
+        "id": 2,
+        "nome": "Caixa para munição 357, 38 e 22LR.",
         "quantidade": 1,
-        "preco": 99.9,
-        "subtotal": 99.9
+        "preco": 119.9,
+        "subtotal": 119.9
       }
     ],
-    "subtotal": 99.9,
+    "subtotal": 119.9,
     "frete": {
       "id": "2",
       "nome": "SEDEX",
       "prazo": "1 dias úteis",
-      "valor": 14.48
+      "valor": 15.7
     },
-    "total": 114.38,
+    "total": 135.6,
     "personalizacao": {
-      "corSuporte": "",
-      "corTampa": "",
-      "corTrava": ""
+      "corSuporte": "dasda",
+      "corTampa": "dsadas",
+      "corTrava": "dsadas"
     },
     "numero": 1,
-    "dataHora": "2026-09-11T16:49:13.703Z",
-    "chave": "41e645f29149494d29300f1104a26be5c4205d8c0c9c2bb6",
-    "fingerprint": "c1678d653fac30119c35d389c9156a14a9cb5a361425c93850121237a1b7f3b4",
+    "dataHora": "2026-09-12T02:59:35.560Z",
+    "chave": "f786d2428b6e74cb88a422b0ba5dc977404d8c541918773a",
+    "fingerprint": "19c090a767db80c3e13db78ea9085d801f03c29653fdeefc5848f787a5fa836b",
     "revisao": 1,
     "status": "aberto",
     "observacoes": ""
   },
   {
     "numero": 2,
-    "chave": "64a0d14e0e07f73f881890fef5f12aabe2dd06c0e0051194",
-    "fingerprint": "8d90e4094ce2a580773c4c3f83d5fed6aa630401fb7c98d95c3c9f2c75d4cc58",
-    "excluidoEm": "2026-09-11T16:50:00.072Z",
+    "chave": "97aaff8b98760eb6992881ec3282524b4b7e59b6bd90d846",
+    "fingerprint": "5d8be67bf1fd7e82312ba09acc9cf093477182ea17f7dfa454f4e95d3bbae9c9",
+    "excluidoEm": "2026-09-12T03:00:00.758Z",
     "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:00.072Z"
+    "atualizadoEm": "2026-09-12T03:00:00.758Z"
   },
   {
     "numero": 3,
-    "chave": "9e995cf6a3a580c51cf302729c80480d792997061dddf8a7",
-    "fingerprint": "6dc14ff990af5da0bc6f94ea8833350710ef34ca46e2b904ec09962ecb6af906",
-    "excluidoEm": "2026-09-11T16:50:01.877Z",
+    "chave": "223befa82fbec5f3a99a550725b34f8f6b73199ad33e63b2",
+    "fingerprint": "1b322a53a896ccde1c54f9971b71608a9cd9716a588c63d89274d39a93987f95",
+    "excluidoEm": "2026-09-12T03:00:14.918Z",
     "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:01.877Z"
-  },
-  {
-    "numero": 4,
-    "chave": "1a68c64f5baed704e2ff21d6a3f75ac5044ca3ffa2d0ec2c",
-    "fingerprint": "c3d7094e7456c19eb90a4ee1d363edc3224bc5a90a710bb61225ffe50dbd99e8",
-    "excluidoEm": "2026-09-11T16:50:15.196Z",
-    "revisao": 2,
-    "atualizadoEm": "2026-09-11T16:50:15.196Z"
+    "atualizadoEm": "2026-09-12T03:00:14.918Z"
   }
 ]

@@ -87,18 +87,26 @@ function produtoPorId(id) {
   return produtos.find(p => p.id === id);
 }
 
+function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c])); }
 function renderProdutos() {
+  const heroImage = document.getElementById('heroImagem');
+  if (heroImage) {
+    heroImage.closest('.hero').classList.toggle('sem-produtos', !produtos.length);
+    heroImage.parentElement.hidden = !produtos.length;
+    if (produtos.length) { heroImage.src = produtos[0].imagem; heroImage.alt = produtos[0].nome; }
+  }
   $("#listaProdutos").innerHTML = produtos.map(p => `
-    <article class="produto">
-      <div class="imagem-produto" data-produto="${p.id}"><img src="${p.imagem}" alt="${p.nome}"></div>
-      <div class="info-produto">
-        <h3>${p.nome}</h3>
-        <p class="descricao">${p.descricao}</p>
+    <article class="produto card">
+      <div class="imagem-produto" data-produto="${p.id}"><img src="${escapeHtml(p.imagem)}" alt="${escapeHtml(p.nome)}"></div>
+      <div class="info-produto card-body">
+        <h3>${escapeHtml(p.nome)}</h3>
+        <p class="descricao">${escapeHtml(p.descricao)}</p>
         <div class="preco">${dinheiro(p.preco)}</div>
-        <button class="adicionar" onclick="adicionar(${p.id})">Adicionar ao carrinho</button>
+        <button class="adicionar btn btn-dark" onclick="adicionar(${p.id})">Adicionar ao carrinho</button>
       </div>
     </article>
   `).join("");
+  if (!produtos.length) $("#listaProdutos").innerHTML = '<div class="catalog-empty"><h3>Novas ideias estão a caminho.</h3><p>Nosso catálogo está sendo preparado. Fale com a loja pelos contatos abaixo.</p><a class="btn btn-brand" href="#contato">Falar com a loja</a></div>';
   document.querySelectorAll('.imagem-produto[data-produto]').forEach(container => {
     const produto = produtoPorId(Number(container.dataset.produto));
     const fotos = [...new Set([produto.imagem, ...(produto.imagens || [])].filter(Boolean))];
@@ -108,28 +116,63 @@ function renderProdutos() {
     container.setAttribute('aria-label', `Fotos de ${produto.nome}`);
     const imagem = container.querySelector('img');
     let transicao = null;
+    let entrada = null;
+    let sobreposicao = null;
+    let solicitacao = 0;
     let indice = 0;
     const contador = document.createElement('span');
     contador.className = 'carrossel-contador';
     contador.setAttribute('aria-live', 'polite');
     contador.setAttribute('aria-atomic', 'true');
-    function mostrarFoto(delta) {
-      if (transicao) transicao.cancel();
-      imagem.onload = null;
-      indice = (indice + delta + fotos.length) % fotos.length;
-      if (delta && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        imagem.onload = () => {
-          imagem.onload = null;
-          transicao = imagem.animate(
-            [{ opacity: 0.2 }, { opacity: 1 }],
-            { duration: 350, easing: 'ease-out' }
-          );
-        };
+    async function mostrarFoto(delta) {
+      const atual = ++solicitacao;
+      const destino = (indice + delta + fotos.length) % fotos.length;
+      if (delta) {
+        const proxima = new Image();
+        try {
+          await new Promise((resolve, reject) => {
+            proxima.onload = resolve;
+            proxima.onerror = reject;
+            proxima.src = fotos[destino];
+          });
+          if (proxima.decode) await proxima.decode();
+        } catch {
+          if (atual === solicitacao) contador.textContent = 'Não foi possível carregar a foto. Tente novamente.';
+          return;
+        }
       }
+      if (atual !== solicitacao || !container.isConnected) return;
+      if (transicao) transicao.cancel();
+      if (entrada) entrada.cancel();
+      if (sobreposicao) sobreposicao.remove();
+      const animar = delta && imagem.complete && imagem.naturalWidth;
+      const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (animar) {
+        sobreposicao = imagem.cloneNode();
+        sobreposicao.classList.add('carrossel-foto-saindo');
+        sobreposicao.alt = '';
+        sobreposicao.setAttribute('aria-hidden', 'true');
+        container.append(sobreposicao);
+      }
+      indice = destino;
       imagem.src = fotos[indice];
-      if (imagem.complete && imagem.naturalWidth && imagem.onload) imagem.onload();
       imagem.alt = `${produto.nome} — foto ${indice + 1} de ${fotos.length}`;
       contador.textContent = `${indice + 1} / ${fotos.length}`;
+      if (animar) {
+        const camada = sobreposicao;
+        const distancia = delta > 0 ? '100%' : '-100%';
+        const saida = delta > 0 ? '-100%' : '100%';
+        const tempo = reduzirMovimento ? 180 : 600;
+        entrada = imagem.animate(reduzirMovimento
+          ? [{ opacity: 0 }, { opacity: 1 }]
+          : [{ transform: `translateX(${distancia})` }, { transform: 'translateX(0)' }],
+          { duration: tempo, easing: 'cubic-bezier(.22,.61,.36,1)' });
+        transicao = camada.animate(reduzirMovimento
+          ? [{ opacity: 1 }, { opacity: 0 }]
+          : [{ transform: 'translateX(0)' }, { transform: `translateX(${saida})` }],
+          { duration: tempo, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' });
+        transicao.finished.then(() => camada.remove(), () => camada.remove());
+      }
     }
     for (const [delta, direcao, simbolo, rotulo] of [
       [-1, 'anterior', '‹', 'Foto anterior'], [1, 'proxima', '›', 'Próxima foto']
@@ -211,12 +254,12 @@ function renderCarrinho() {
         <div class="item">
           <div class="mini-imagem">${p.id}</div>
           <div>
-            <h4>${p.nome}</h4>
+            <h4>${escapeHtml(p.nome)}</h4>
             <div>${dinheiro(p.preco)}</div>
             <div class="quantidade">
-              <button onclick="alterarQuantidade(${p.id}, -1)">−</button>
+              <button aria-label="Diminuir quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${p.id}, -1)">−</button>
               <span>${item.quantidade}</span>
-              <button onclick="alterarQuantidade(${p.id}, 1)">+</button>
+              <button aria-label="Aumentar quantidade de ${escapeHtml(p.nome)}" onclick="alterarQuantidade(${p.id}, 1)">+</button>
             </div>
           </div>
           <button class="remover" onclick="remover(${p.id})">Remover</button>
@@ -234,12 +277,23 @@ function renderCarrinho() {
   }
 }
 
+let focoAnteriorCarrinho = null;
 function abrirCarrinho() {
+  if ($("#fundoModal").classList.contains("aberto")) return;
+  focoAnteriorCarrinho = document.activeElement;
   $("#fundoModal").classList.add("aberto");
+  document.body.classList.add('cart-open');
+  $("#abrirCarrinho").setAttribute('aria-expanded', 'true');
+  document.querySelectorAll('body > header, body > main, body > footer, body > .skip-link').forEach(el => { el.inert = true; });
+  $("#fecharCarrinho").focus();
 }
 
 function fecharCarrinho() {
   $("#fundoModal").classList.remove("aberto");
+  document.body.classList.remove('cart-open');
+  $("#abrirCarrinho").setAttribute('aria-expanded', 'false');
+  document.querySelectorAll('body > header, body > main, body > footer, body > .skip-link').forEach(el => { el.inert = false; });
+  (focoAnteriorCarrinho?.isConnected ? focoAnteriorCarrinho : $("#abrirCarrinho")).focus();
 }
 
 async function calcularFrete() {
@@ -259,16 +313,14 @@ async function calcularFrete() {
   botao.textContent = "Calculando...";
 
   try {
+    await atualizarCatalogo();
+    if (!carrinho.length) throw new Error("Os produtos do carrinho não estão mais disponíveis.");
     const resposta = await fetch("/api/frete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cep,
-        peso: Math.max(pesoTotal(), 0.5),
-        largura: Math.max(...carrinho.map(i => produtoPorId(i.id).largura)),
-        altura: Math.max(...carrinho.map(i => produtoPorId(i.id).altura)),
-        comprimento: Math.max(...carrinho.map(i => produtoPorId(i.id).comprimento)),
-        valor: subtotal()
+        itens: carrinho.map(({ id, quantidade }) => ({ id, quantidade }))
       })
     });
 
@@ -297,7 +349,7 @@ async function calcularFrete() {
       mostrarToast("Frete demonstrativo calculado. Configure a API para valores reais.");
     }
   } catch (erro) {
-    $("#resultadoFrete").innerHTML = `<p style="color:#b00020">${erro.message}</p>`;
+    $("#resultadoFrete").innerHTML = `<p style="color:#b00020">${escapeHtml(erro.message)}</p>`;
   } finally {
     botao.disabled = false;
     botao.textContent = "Calcular";
@@ -306,10 +358,10 @@ async function calcularFrete() {
 
 function renderOpcoesFrete() {
   $("#resultadoFrete").innerHTML = opcoesFrete.map((opcao, index) => `
-    <div class="opcao-frete ${index === 0 ? "selecionada" : ""}" onclick="selecionarFrete(${index})">
-      <strong>${opcao.nome} — ${dinheiro(opcao.valor)}</strong>
-      <small>${opcao.prazo}</small>
-    </div>
+    <button type="button" aria-pressed="${opcao === freteSelecionado}" class="opcao-frete ${opcao === freteSelecionado ? "selecionada" : ""}" onclick="selecionarFrete(${index})">
+      <strong>${escapeHtml(opcao.nome)} — ${dinheiro(opcao.valor)}</strong>
+      <small>${escapeHtml(opcao.prazo)}</small>
+    </button>
   `).join("");
 }
 
@@ -317,6 +369,7 @@ function selecionarFrete(index) {
   freteSelecionado = opcoesFrete[index];
   document.querySelectorAll(".opcao-frete").forEach((el, i) => {
     el.classList.toggle("selecionada", i === index);
+    el.setAttribute("aria-pressed", String(i === index));
   });
   renderCarrinho();
   salvarEstado();
@@ -429,6 +482,16 @@ function mostrarToast(texto) {
 }
 
 $("#abrirCarrinho").addEventListener("click", abrirCarrinho);
+document.addEventListener('keydown', event => {
+  if (!$("#fundoModal").classList.contains('aberto')) return;
+  if (event.key === 'Escape') { event.preventDefault(); fecharCarrinho(); }
+  if (event.key === 'Tab') {
+    const nodes = [...document.querySelectorAll('.carrinho button:not(:disabled), .carrinho input:not(:disabled), .carrinho select:not(:disabled), .carrinho textarea:not(:disabled), .carrinho a[href]')].filter(el => el.getClientRects().length);
+    const first = nodes[0], last = nodes[nodes.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+});
 $("#fecharCarrinho").addEventListener("click", fecharCarrinho);
 $("#fundoModal").addEventListener("click", (event) => {
   if (event.target === event.currentTarget) fecharCarrinho();
@@ -470,6 +533,8 @@ $("#telefone").addEventListener("input", (e) => {
 
 camposPersonalizacao.forEach(id => document.getElementById(id).addEventListener('input', salvarEstado));
 carregarEstado();
+carrinho = carrinho.filter(i => produtoPorId(i.id) && Number.isInteger(i.quantidade) && i.quantidade > 0 && i.quantidade <= 999);
+freteSelecionado = null; opcoesFrete = [];
 renderProdutos();
 renderCarrinho();
 
@@ -482,3 +547,18 @@ $('#novoPedido').addEventListener('click', () => {
   limparDadosDoPedido(); $('#pedidoSalvo').hidden = true;
   mostrarToast('Carrinho pronto para um novo pedido.');
 });
+
+async function atualizarCatalogo() {
+  const response = await fetch('/api/produtos', { cache: 'no-store' });
+  if (!response.ok) throw new Error('Não foi possível atualizar o catálogo. Tente novamente.');
+  const next = await response.json();
+  if (JSON.stringify(next) === JSON.stringify(produtos)) return false;
+  produtos.splice(0, produtos.length, ...next);
+  carrinho = carrinho.filter(i => produtoPorId(i.id));
+  freteSelecionado = null; opcoesFrete = [];
+  renderProdutos(); renderCarrinho(); renderOpcoesFrete(); salvarEstado();
+  return true;
+}
+setInterval(() => {
+  if (!document.hidden && !enviandoPedido && !$('#calcularFrete').disabled) atualizarCatalogo().catch(() => {});
+}, 30000);

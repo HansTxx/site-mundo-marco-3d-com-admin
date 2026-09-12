@@ -117,7 +117,7 @@ test('fluxo HTTP: login, cookies, pedidos protegidos, validação, duplicação 
   assert.equal(disk[1].numero, 2);
   assert.equal((await request('/api/admin/logout', {}, auth)).status, 200);
   assert.equal((await request('/api/admin/pedidos', null, auth)).status, 401);
-  const frete = await request('/api/frete', { cep: '88370603', peso: 0.5 });
+  const frete = await request('/api/frete', { cep: '88370603', itens: [{ id: 1, quantidade: 1 }] });
   assert.equal(frete.status, 200); assert.equal((await frete.json()).opcoes.length, 2);
   const config = await (await request('/config.js')).text();
   assert.ok(!config.includes(process.env.ADMIN_PASSWORD));

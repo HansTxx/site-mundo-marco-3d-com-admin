@@ -31,7 +31,7 @@ for (const button of document.querySelectorAll('[role="tab"]')) {
   });
 }
 function status(message = '', error = false) { $('#status').textContent = message; $('#status').classList.toggle('error', error); }
-function loggedOut() { $('#contaDialog').close(); $('#contaForm').reset(); editor.close(); allOrders = []; activeStatus = 'aberto'; $('#painel').hidden = true; $('#pedidos').replaceChildren(); $('#login').hidden = false; }
+function loggedOut() { document.getElementById('productsDialog')?.close(); $('#contaDialog').close(); $('#contaForm').reset(); editor.close(); allOrders = []; activeStatus = 'aberto'; $('#painel').hidden = true; $('#pedidos').replaceChildren(); $('#login').hidden = false; }
 async function api(url, body) {
   const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin', ...(body ? { method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Loja-Request': '1' }, body: JSON.stringify(body) } : {}) });
@@ -46,6 +46,8 @@ function element(tag, value, className) {
   const node = document.createElement(tag);
   if (value != null) node.textContent = String(value); // Customer input is always text, never HTML.
   if (className) node.className = className;
+  const bootstrapClass = { button: 'btn', input: 'form-control', textarea: 'form-control', select: 'form-select', label: 'form-label', table: 'table' }[tag];
+  if (bootstrapClass) node.classList.add(bootstrapClass);
   return node;
 }
 function renderOrder(order) {

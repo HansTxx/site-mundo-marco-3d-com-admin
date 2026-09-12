@@ -5,38 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mundo do Marco 3D</title>
   <link rel="icon" href="/favicon.png" type="image/png">
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#171917">
+  <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="/style.css?v=bootstrap-1">
+  <link rel="stylesheet" href="/theme.css?v=2">
 </head>
 <body>
-  <header class="topo">
+  <a href="#catalogo" class="skip-link">Pular para os produtos</a>
+  <header class="topo navbar">
     <div class="container topo-interno">
-     <a class="logo" href="#">
+     <a class="logo navbar-brand" href="#inicio" aria-label="Mundo do Marco 3D — início">
     <img src="imagens/favicon.png" alt="Logo">
-    <span>O Incrível Mundo 3D Do Marco</span>
+    <span><small>O INCRÍVEL MUNDO</small>Marco <b>3D</b></span>
 	</a>
-      <button class="botao-carrinho" id="abrirCarrinho">
+      <nav class="store-nav nav" aria-label="Navegação principal"><a class="nav-link" href="#catalogo">Produtos</a><a class="nav-link" href="#personalizar">Personalização</a><a class="nav-link" href="#contato">Contato</a></nav>
+      <button class="btn botao-carrinho" id="abrirCarrinho" aria-controls="fundoModal" aria-expanded="false">
         🛒 Carrinho <span id="contador">0</span>
       </button>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <div>
-        <p class="etiqueta">Bem-Vindos a nossa loja!</p>
-        <h1>Escolha a opção que melhor se encaixa no que você precisa!</h1>
+  <main class="container" id="inicio">
+    <section class="hero row g-0" aria-labelledby="heroTitulo">
+      <div class="hero-copy col-lg-7">
+        <p class="eyebrow"><span></span> IMPRESSÃO 3D · DO SEU JEITO</p>
+        <h1 id="heroTitulo">Sua ideia.<br>Uma nova <em>forma.</em></h1>
+        <p class="hero-description">Caixas e peças personalizadas, com a sua identidade em cada detalhe. Escolha o modelo e deixe o resto com a criatividade.</p>
+        <div class="hero-actions d-flex flex-wrap gap-3"><a class="btn btn-brand" href="#catalogo">Explorar produtos <span aria-hidden="true">↗</span></a><a class="hero-link" href="#personalizar">Como personalizar <span aria-hidden="true">→</span></a></div>
+        <div class="hero-caption"><span class="color-dots" aria-hidden="true"><i></i><i></i><i></i></span>Cores, nomes e ideias que são só suas.</div>
       </div>
-	  <p class="etiqueta">Personalize sua caixa da forma que preferir, podendo escolher a cor da tampa, trava e do suporte de munição. A tampa pode ser personalizada com nome ou imagem também.</p>
+      <div class="hero-visual col-lg-5"><img id="heroImagem" src="/imagens/produto1.jpeg" alt="Caixa personalizada produzida em impressão 3D"><div class="hero-photo-label"><span>CRIADO EM 3D</span><strong>Feito para ser seu.</strong></div></div>
     </section>
+    <div class="service-strip row g-0"><div class="col-md-4"><span aria-hidden="true">01</span><div><strong>Escolha seu modelo</strong><small>Encontre a peça para o que você precisa.</small></div></div><div class="col-md-4"><span aria-hidden="true">02</span><div><strong>Dê o seu toque</strong><small>Combine cores e personalize os detalhes.</small></div></div><div class="col-md-4"><span aria-hidden="true">03</span><div><strong>Combine pelo WhatsApp</strong><small>Envie seu pedido e converse com a loja.</small></div></div></div>
 
-    <section>
+    <section id="catalogo" aria-labelledby="catalogoTitulo">
+      <div class="section-heading"><div><p class="eyebrow">EXPLORE A COLEÇÃO</p><h2 id="catalogoTitulo">Pequenos detalhes.<br>Grandes possibilidades.</h2></div><p>Encontre seu modelo.<br>A personalidade fica por sua conta.</p></div>
       <div class="produtos" id="listaProdutos"></div>
     </section>
+    <section id="personalizar" class="personalizar row g-4" aria-labelledby="personalizarTitulo"><div class="col-lg-5"><p class="eyebrow">CADA DETALHE CONTA</p><h2 id="personalizarTitulo">Uma caixa.<br>Do seu jeito.</h2><p>Informe suas preferências no carrinho. Se escolher mais de um produto, indique a qual caixa cada observação se refere.</p><a href="#catalogo" class="text-link">Escolher meu modelo <span aria-hidden="true">↗</span></a></div><div class="col-lg-7"><div class="custom-step"><span>01</span><div><h3>Tampa com personalidade</h3><p>Escolha a cor e conte qual nome ou imagem você quer incluir.</p></div></div><div class="custom-step"><span>02</span><div><h3>Suporte na sua cor</h3><p>Defina a cor do suporte de munição para combinar com a sua caixa.</p></div></div><div class="custom-step"><span>03</span><div><h3>O toque final</h3><p>Escolha a cor da trava e complete a sua combinação.</p></div></div></div></section>
   </main>
 
-  <footer class="rodape">
+  <footer class="rodape" id="contato">
     <div class="container rodape-colunas">
-      <div class="rodape-apresentacao">
+      <div class="rodape-apresentacao"><a class="footer-brand" href="#inicio">Marco <span>3D</span></a>
         <p>Onde a criatividade ganha forma! Peças personalizadas feitas com carinho, direto da imaginação para a realidade. ✨</p>
       </div>
       <div class="rodape-coluna">
@@ -64,15 +75,15 @@
           </svg>
           <span>WhatsApp</span>
         </a>
-        </a>
       </div>
     </div>
+    <div class="container footer-bottom"><span>Mundo do Marco 3D · Criatividade que ganha forma.</span><a href="/admin">Área administrativa ↗</a></div>
   </footer>
   <div class="fundo-modal" id="fundoModal">
-    <aside class="carrinho">
+    <aside class="carrinho" role="dialog" aria-modal="true" aria-labelledby="carrinhoTitulo" tabindex="-1">
       <div class="carrinho-topo">
-        <h2>Seu carrinho</h2>
-        <button class="fechar" id="fecharCarrinho">×</button>
+        <div><p class="eyebrow">QUASE SEU</p><h2 id="carrinhoTitulo">Seu carrinho</h2></div>
+        <button class="btn fechar" id="fecharCarrinho" aria-label="Fechar carrinho">×</button>
       </div>
 
       <div id="itensCarrinho"></div>
@@ -80,41 +91,41 @@
       <div class="dados-cliente">
         <h3>Dados do cliente</h3>
         <div class="campo">
-          <label for="nome">Nome</label>
-          <input id="nome" type="text" placeholder="Seu nome completo">
+          <label class="form-label" for="nome">Nome</label>
+          <input class="form-control" id="nome" autocomplete="name" type="text" placeholder="Seu nome completo">
         </div>
 
         <div class="campos-duplos">
           <div class="campo">
-            <label for="email">E-mail</label>
-            <input id="email" type="email" placeholder="seu@email.com">
+            <label class="form-label" for="email">E-mail</label>
+            <input class="form-control" id="email" autocomplete="email" type="email" placeholder="seu@email.com">
           </div>
           <div class="campo">
-            <label for="telefone">Telefone</label>
-            <input id="telefone" type="tel" placeholder="(00) 00000-0000">
+            <label class="form-label" for="telefone">Telefone</label>
+            <input class="form-control" id="telefone" autocomplete="tel" type="tel" placeholder="(00) 00000-0000">
           </div>
         </div>
 
         <div class="campo">
-          <label for="cpf">CPF</label>
-          <input id="cpf" name="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00">
+          <label class="form-label" for="cpf">CPF</label>
+          <input class="form-control" id="cpf" name="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00">
         </div>
 
         <h3 class="titulo-endereco">Endereço de entrega</h3>
 
         <div class="campo">
-          <label for="logradouro">Logradouro</label>
-          <input id="logradouro" type="text" placeholder="Rua, avenida, etc.">
+          <label class="form-label" for="logradouro">Logradouro</label>
+          <input class="form-control" id="logradouro" autocomplete="address-line1" type="text" placeholder="Rua, avenida, etc.">
         </div>
 
         <div class="campos-duplos">
           <div class="campo">
-            <label for="cidade">Cidade</label>
-            <input id="cidade" type="text" placeholder="Sua cidade">
+            <label class="form-label" for="cidade">Cidade</label>
+            <input class="form-control" id="cidade" autocomplete="address-level2" type="text" placeholder="Sua cidade">
           </div>
           <div class="campo campo-estado">
-            <label for="estado">Estado</label>
-            <select id="estado">
+            <label class="form-label" for="estado">Estado</label>
+            <select class="form-select" id="estado" autocomplete="address-level1">
               <option value="">UF</option>
               <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
               <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
@@ -129,12 +140,12 @@
 
         <div class="campos-duplos">
           <div class="campo">
-            <label for="numero">Número</label>
-            <input id="numero" type="text" placeholder="123">
+            <label class="form-label" for="numero">Número</label>
+            <input class="form-control" id="numero" type="text" placeholder="123">
           </div>
           <div class="campo">
-            <label for="complemento">Complemento</label>
-            <input id="complemento" type="text" placeholder="Apto, casa, etc.">
+            <label class="form-label" for="complemento">Complemento</label>
+            <input class="form-control" id="complemento" type="text" placeholder="Apto, casa, etc.">
           </div>
         </div>
       </div>
@@ -147,16 +158,16 @@
         <h3 id="personalizacaoTitulo">Observações e personalização</h3>
         <p>Campos opcionais. Se houver mais de um produto, indique a qual caixa cada observação se refere.</p>
         <div class="campo">
-          <label for="corSuporte">Cor - Suporte da munição</label>
-          <textarea id="corSuporte" maxlength="1000" rows="2" placeholder="Ex.: preto"></textarea>
+          <label class="form-label" for="corSuporte">Cor - Suporte da munição</label>
+          <textarea class="form-control" id="corSuporte" maxlength="1000" rows="2" placeholder="Ex.: preto"></textarea>
         </div>
         <div class="campo">
-          <label for="corTampa">Cor/Personalização - Tampa da caixa</label>
-          <textarea id="corTampa" maxlength="1000" rows="3" placeholder="Ex.: azul, com o nome Marco"></textarea>
+          <label class="form-label" for="corTampa">Cor/Personalização - Tampa da caixa</label>
+          <textarea class="form-control" id="corTampa" maxlength="1000" rows="3" placeholder="Ex.: azul, com o nome Marco"></textarea>
         </div>
         <div class="campo">
-          <label for="corTrava">Cor - Trava</label>
-          <textarea id="corTrava" maxlength="1000" rows="2" placeholder="Ex.: amarelo"></textarea>
+          <label class="form-label" for="corTrava">Cor - Trava</label>
+          <textarea class="form-control" id="corTrava" maxlength="1000" rows="2" placeholder="Ex.: amarelo"></textarea>
         </div>
       </section>
 
@@ -164,10 +175,10 @@
         <h3>Calcular frete</h3>
         <p>Digite seu CEP para ver as opções de entrega.</p>
         <div class="linha-cep">
-          <input id="cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000">
-          <button id="calcularFrete">Calcular</button>
+          <input class="form-control" aria-label="CEP de entrega" autocomplete="postal-code" id="cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000">
+          <button class="btn" id="calcularFrete">Calcular</button>
         </div>
-        <div id="resultadoFrete" class="resultado-frete"></div>
+        <div id="resultadoFrete" aria-live="polite" class="resultado-frete"></div>
       </div>
 
       <div class="resumo">
@@ -178,17 +189,17 @@
       <div id="pedidoSalvo" class="pedido-salvo" role="status" hidden>
         <p id="pedidoSalvoTexto"></p>
         <a id="abrirWhatsappPedido" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
-        <button type="button" id="novoPedido">Fazer outro pedido</button>
+        <button class="btn" type="button" id="novoPedido">Fazer outro pedido</button>
       </div>
-      <button class="finalizar" id="finalizarPedido">Finalizar pedido</button>
+      <button class="btn finalizar" id="finalizarPedido">Finalizar pedido</button>
       <small class="aviso">O pedido será registrado na loja e o WhatsApp abrirá com a mensagem para você enviar.</small>
     </aside>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="store-toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <script src="/config.js"></script>
   <script src="/produtos.js"></script>
   <script src="/cpf.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=carrossel-2"></script>
 </body>
 </html>
